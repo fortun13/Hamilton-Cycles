@@ -4,7 +4,7 @@
 .mtj.tmp/
 
 # Package Files #
-*.jar
+#*.jar
 *.war
 *.ear
 
@@ -43,3 +43,7 @@ local.properties
 
 # TeXlipse plugin
 .texlipse
+
+.classpath
+
+.project
