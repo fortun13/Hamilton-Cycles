@@ -42,6 +42,8 @@ public class MainWindow extends JFrame {
 	private MyEdgeFactory eFactory;
 
 	private VisualizationViewer<GraphElements.MyVertex,GraphElements.MyEdge> vv;
+	
+	private JPanel graphPanel;
 
 	/**
 	 * Launch the application.
@@ -70,8 +72,8 @@ public class MainWindow extends JFrame {
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
 
-		vFactory = MyVertexFactory.getInstance();
-		eFactory = MyEdgeFactory.getInstance();
+	//	vFactory = MyVertexFactory.getInstance();
+	//	eFactory = MyEdgeFactory.getInstance();
 
 		//	g = new SparseMultigraph<>();
 
@@ -128,6 +130,9 @@ public class MainWindow extends JFrame {
 
 		edgesSpinner = new JSpinner();
 		panel.add(edgesSpinner);
+		
+		graphPanel = new JPanel();
+		contentPane.add(graphPanel, BorderLayout.CENTER);
 
 		//		contentPane.add(vv);
 
@@ -147,6 +152,8 @@ public class MainWindow extends JFrame {
 	}
 
 	protected void generateGraph() {
+		vFactory = MyVertexFactory.getInstance();
+		eFactory = MyEdgeFactory.getInstance();
 		vertexList = new LinkedList<MyVertex>();
 		int number = (int)vertexSpinner.getValue();
 		double probability = 0.6;
@@ -155,7 +162,6 @@ public class MainWindow extends JFrame {
 			vertexList.add(vFactory.create());
 			g.addVertex(vertexList.get(i));
 		}
-
 		for(int i=0; i<number; i++){
 			for(int j=i+1; j<number; j++){
 				if(Math.random() < probability) {
@@ -168,6 +174,7 @@ public class MainWindow extends JFrame {
 		setupGraph();
 		this.pack();
 		//	contentPane.repaint();
+	//	contentPane.repaint();
 	}
 
 	private void setupGraph() {
@@ -175,10 +182,17 @@ public class MainWindow extends JFrame {
 		//		g.addVertex(vFactory.create());
 
 
+		contentPane.remove(graphPanel);
+
+		graphPanel = new JPanel();
+	//	graphPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+	//	graphPanel.setLayout(new BorderLayout(0, 0));
+		
+		
 		layout = new CircleLayout<GraphElements.MyVertex, GraphElements.MyEdge>(g);
-		layout.setSize(new Dimension(400,400));
+		layout.setSize(new Dimension(500,500));
 		vv = new VisualizationViewer<GraphElements.MyVertex,GraphElements.MyEdge>(layout);
-		vv.setPreferredSize(new Dimension(450,450));
+		vv.setPreferredSize(new Dimension(550,550));
 		// Show vertex and edge labels
 		vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
 		vv.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller());
@@ -203,7 +217,7 @@ public class MainWindow extends JFrame {
 
 		vv.setGraphMouse(gm);
 
-		contentPane.add(vv);
+		graphPanel.add(vv);
 
 		JMenuBar menuBar = new JMenuBar();
 		JMenu modeMenu = gm.getModeMenu();
@@ -214,7 +228,8 @@ public class MainWindow extends JFrame {
 		menuBar.add(modeMenu);
 		this.setJMenuBar(menuBar);
 		gm.setMode(ModalGraphMouse.Mode.EDITING); // Start off in editing mode
+		
+		contentPane.add(graphPanel);
+
 	}
-
-
 }
