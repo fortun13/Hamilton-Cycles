@@ -63,6 +63,7 @@ public class GraphElements {
         private double capacity;
         private double weight;
         private String name;
+        private boolean isPartOfCycle = false;
 
         public MyEdge(String name) {
             this.name = name;
@@ -94,6 +95,14 @@ public class GraphElements {
         public String toString() {
             return name;
         }
+
+        public void setAsPartOfCycle() {
+            isPartOfCycle = true;
+        }
+
+        public boolean isPartOfCycle() {
+            return isPartOfCycle;
+        }
     }
     
     // Single factory for creating Vertices...
@@ -111,7 +120,7 @@ public class GraphElements {
         }
         
         public GraphElements.MyVertex create() {
-            String name = "Wezel" + nodeCount++;
+            String name = "V" + nodeCount++;
             MyVertex v = new MyVertex(name);
             v.setPacketSwitchCapable(defaultPSC);
             v.setTdmSwitchCapable(defaultTDM);
@@ -151,7 +160,7 @@ public class GraphElements {
         }
         
         public GraphElements.MyEdge create() {
-            String name = "Krawedz" + linkCount++;
+            String name = "E" + linkCount++;
             MyEdge link = new MyEdge(name);
             link.setWeight(defaultWeight);
             link.setCapacity(defaultCapacity);

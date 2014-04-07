@@ -7,6 +7,8 @@ import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
+import edu.uci.ics.jung.visualization.renderers.*;
+import edu.uci.ics.jung.visualization.renderers.Renderer;
 import graph.GraphElements.MyEdge;
 import graph.GraphElements.MyEdgeFactory;
 import graph.GraphElements.MyVertex;
@@ -19,6 +21,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.LinkedList;
 
+import org.apache.commons.collections15.Transformer;
+
 public class MainWindow extends JFrame {
 
 	private JPanel contentPane;
@@ -30,7 +34,7 @@ public class MainWindow extends JFrame {
 
 	private Layout<GraphElements.MyVertex, GraphElements.MyEdge> layout;
 
-	private MyVertexFactory vFactory;
+    private MyVertexFactory vFactory;
 	private MyEdgeFactory eFactory;
 
 	private VisualizationViewer<GraphElements.MyVertex,GraphElements.MyEdge> vv;
@@ -118,6 +122,16 @@ public class MainWindow extends JFrame {
         vertexSpinner.setValue(4);
 		panel.add(vertexSpinner);
 
+        JButton btnShowGraph = new JButton("GraphToSystemOut");
+        btnShowGraph.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                printGraphToSysOut();
+            }
+        });
+
+        panel.add(btnShowGraph);
+
 		graphPanel = new JPanel();
 		contentPane.add(graphPanel, BorderLayout.CENTER);
 
@@ -157,13 +171,8 @@ public class MainWindow extends JFrame {
 				} 
 			}
 		}
-        for (MyVertex k : g.getVertices()) {
-            System.out.println(k);
-            for (MyEdge v : g.getIncidentEdges(k)) {
-                if (g.getSource(v) == k) System.out.print(v);
-            }
-            System.out.println();
-        }
+
+        printGraphToSysOut();
 		//	vv.repaint();
 		//	contentPane.repaint();
 		setupGraph();
@@ -194,11 +203,23 @@ public class MainWindow extends JFrame {
 		vv.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller());
 
 
+        Transformer<MyEdge,Paint> edgeTransform = new Transformer<MyEdge, Paint>() {
+            @Override
+            public Paint transform(MyEdge myEdge) {
+                if (myEdge.isPartOfCycle()) return Color.RED;
+                else return Color.BLACK;
+            }
+        };
 
-		EditingModalGraphMouse<MyVertex, MyEdge> gm = new EditingModalGraphMouse<GraphElements.MyVertex, GraphElements.MyEdge>(
+        EditingModalGraphMouse<MyVertex, MyEdge> gm = new EditingModalGraphMouse<GraphElements.MyVertex, GraphElements.MyEdge>(
 				vv.getRenderContext(),
 				vFactory,
 				eFactory);
+
+        vv.getRenderContext().setEdgeDrawPaintTransformer(edgeTransform);
+
+        vv.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.N);
+
 
 		GraphElements.MyEdgeFactory.setDefaultCapacity(192.0);
 		GraphElements.MyEdgeFactory.setDefaultWeight(5.0);
@@ -225,9 +246,23 @@ public class MainWindow extends JFrame {
 
 		menuBar.add(modeMenu);
 		this.setJMenuBar(menuBar);
-		gm.setMode(ModalGraphMouse.Mode.EDITING); // Start off in editing mode
+		gm.setMode(ModalGraphMouse.Mode.TRANSFORMING); // Start off in editing mode
 		
 		contentPane.add(graphPanel);
 
 	}
+
+    private void printGraphToSysOut() {
+        for (MyVertex vertex : g.getVertices()) {
+            System.out.println(vertex);
+            for (MyEdge edge : g.getIncidentEdges(vertex)) {
+                if (g.getSource(edge) == vertex) {
+                    System.out.print(edge);
+                    if (Math.random() < 0.5) edge.setAsPartOfCycle();
+                }
+            }
+            System.out.println();
+        }
+        System.out.println("---------------------------------------------");
+    }
 }
