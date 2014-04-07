@@ -47,3 +47,8 @@ local.properties
 .classpath
 
 .project
+
+#intelliJ
+
+.idea
+*.iml
