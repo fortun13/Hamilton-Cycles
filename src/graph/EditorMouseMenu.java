@@ -10,9 +10,7 @@ package graph;
 
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
-import edu.uci.ics.jung.algorithms.layout.StaticLayout;
 import edu.uci.ics.jung.graph.SparseMultigraph;
-import edu.uci.ics.jung.graph.util.Pair;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
@@ -22,24 +20,11 @@ import graph.GraphElements.MyEdgeFactory;
 import graph.GraphElements.MyVertex;
 import graph.GraphElements.MyVertexFactory;
 
-import java.awt.Dimension;
-import java.util.LinkedList;
-
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JPopupMenu;
-import javax.swing.JPanel;
-
-import java.awt.BorderLayout;
-
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JSpinner;
-import javax.swing.JSeparator;
-
-import java.awt.event.ActionListener;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.LinkedList;
 
 /**
  * Illustrates the use of custom edge and vertex classes in a graph editing application.
@@ -122,7 +107,7 @@ public class EditorMouseMenu {
         JButton btnGenerate = new JButton("Generate");
         btnGenerate.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		if ((int)vertexSpinner.getValue() > 0) generateGraph();
+        		if ((Integer)vertexSpinner.getValue() > 0) generateGraph();
         	}
         });
         panel.add(btnGenerate);
@@ -152,7 +137,7 @@ public class EditorMouseMenu {
 		  MyVertexFactory vFactory = MyVertexFactory.getInstance();
 		  vertexList = new LinkedList<MyVertex>();
 		  g = new SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge>();
-		  for (int i=0;i<(int)vertexSpinner.getValue();i++) {
+		  for (int i=0;i<(Integer)vertexSpinner.getValue();i++) {
 	        	vertexList.add(vFactory.create());
 	        	g.addVertex(vertexList.get(i));
 	        }

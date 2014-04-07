@@ -1,38 +1,30 @@
 package graph;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.LinkedList;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JSpinner;
-import javax.swing.border.EmptyBorder;
-
-import graph.GraphElements.*;
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
-import edu.uci.ics.jung.graph.SparseMultigraph;
+import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
+import graph.GraphElements.MyEdge;
+import graph.GraphElements.MyEdgeFactory;
+import graph.GraphElements.MyVertex;
+import graph.GraphElements.MyVertexFactory;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.LinkedList;
 
 public class MainWindow extends JFrame {
 
 	private JPanel contentPane;
-	private SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge> g;
+	private DirectedSparseGraph<MyVertex, MyEdge> g;
 
 	private JSpinner vertexSpinner;
-	private JSpinner edgesSpinner;
 
 	private LinkedList<MyVertex> vertexList = new LinkedList<MyVertex>();
 
@@ -114,7 +106,7 @@ public class MainWindow extends JFrame {
 		JButton btnGenerate = new JButton("Generate");
 		btnGenerate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if ((int)vertexSpinner.getValue() > 0) generateGraph();
+				if ((Integer)vertexSpinner.getValue() > 0) generateGraph();
 			}
 		});
 		panel.add(btnGenerate);
@@ -123,14 +115,9 @@ public class MainWindow extends JFrame {
 		panel.add(lblVertex);
 
 		vertexSpinner = new JSpinner();
+        vertexSpinner.setValue(4);
 		panel.add(vertexSpinner);
 
-		JLabel lblEdges = new JLabel("Edges");
-		panel.add(lblEdges);
-
-		edgesSpinner = new JSpinner();
-		panel.add(edgesSpinner);
-		
 		graphPanel = new JPanel();
 		contentPane.add(graphPanel, BorderLayout.CENTER);
 
@@ -155,9 +142,9 @@ public class MainWindow extends JFrame {
 		vFactory = MyVertexFactory.getInstance();
 		eFactory = MyEdgeFactory.getInstance();
 		vertexList = new LinkedList<MyVertex>();
-		int number = (int)vertexSpinner.getValue();
+		int number = (Integer)vertexSpinner.getValue();
 		double probability = 0.6;
-		g = new SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge>();
+		g = new DirectedSparseGraph<MyVertex, MyEdge>();
 		for (int i=0;i<number;i++) {
 			vertexList.add(vFactory.create());
 			g.addVertex(vertexList.get(i));
@@ -166,13 +153,22 @@ public class MainWindow extends JFrame {
 			for(int j=i+1; j<number; j++){
 				if(Math.random() < probability) {
 					g.addEdge(eFactory.create(), vertexList.get(i), vertexList.get(j));
+
 				} 
 			}
 		}
+        for (MyVertex k : g.getVertices()) {
+            System.out.println(k);
+            for (MyEdge v : g.getIncidentEdges(k)) {
+                if (g.getSource(v) == k) System.out.print(v);
+            }
+            System.out.println();
+        }
 		//	vv.repaint();
 		//	contentPane.repaint();
 		setupGraph();
 		this.pack();
+//        System.out.println(vv.get);
 		//	contentPane.repaint();
 	//	contentPane.repaint();
 	}
@@ -189,13 +185,15 @@ public class MainWindow extends JFrame {
 	//	graphPanel.setLayout(new BorderLayout(0, 0));
 		
 		
-		layout = new CircleLayout<GraphElements.MyVertex, GraphElements.MyEdge>(g);
+		layout = new CircleLayout<MyVertex, MyEdge>(g);
 		layout.setSize(new Dimension(500,500));
 		vv = new VisualizationViewer<GraphElements.MyVertex,GraphElements.MyEdge>(layout);
 		vv.setPreferredSize(new Dimension(550,550));
 		// Show vertex and edge labels
 		vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
 		vv.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller());
+
+
 
 		EditingModalGraphMouse<MyVertex, MyEdge> gm = new EditingModalGraphMouse<GraphElements.MyVertex, GraphElements.MyEdge>(
 				vv.getRenderContext(),
