@@ -2,12 +2,11 @@ package graph;
 
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
-import edu.uci.ics.jung.graph.DirectedSparseGraph;
+import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
-import edu.uci.ics.jung.visualization.renderers.*;
 import edu.uci.ics.jung.visualization.renderers.Renderer;
 import graph.GraphElements.MyEdge;
 import graph.GraphElements.MyEdgeFactory;
@@ -26,7 +25,7 @@ import org.apache.commons.collections15.Transformer;
 public class MainWindow extends JFrame {
 
 	private JPanel contentPane;
-	private DirectedSparseGraph<MyVertex, MyEdge> g;
+	private SparseMultigraph<MyVertex, MyEdge> g;
 
 	private JSpinner vertexSpinner;
 
@@ -61,7 +60,7 @@ public class MainWindow extends JFrame {
 	 * Create the frame.
 	 */
 	public MainWindow() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -102,7 +101,6 @@ public class MainWindow extends JFrame {
 
 
 		//JFrame frame = new JFrame("Editing and Mouse Menu Demo");
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JPanel panel = new JPanel();
 		contentPane.add(panel, BorderLayout.NORTH);
@@ -132,6 +130,27 @@ public class MainWindow extends JFrame {
 
         panel.add(btnShowGraph);
 
+        JButton btnFindPath = new JButton("FindCycle");
+        btnFindPath.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                LinkedList<MyVertex> path = findPath();
+                if (!(path == null)) {
+                    for (int i = 0; i < path.size() - 1; i++) {
+                        MyEdge edge = g.findEdge(path.get(i), path.get(i + 1));
+                        edge.setAsPartOfCycle();
+                    }
+                    MyEdge edge = g.findEdge(path.get(path.size()-1),path.get(0));
+                    edge.setAsPartOfCycle();
+                    // Still don't know how to redraw graph...
+                    contentPane.repaint();
+                }
+                System.out.println(path);
+            }
+        });
+
+        panel.add(btnFindPath);
+
 		graphPanel = new JPanel();
 		contentPane.add(graphPanel, BorderLayout.CENTER);
 
@@ -152,13 +171,18 @@ public class MainWindow extends JFrame {
 		this.setVisible(true);    
 	}
 
-	protected void generateGraph() {
+    private LinkedList<MyVertex> findPath() {
+        Algorithms al = new Algorithms(g,vertexList.get(0));
+        return al.getCycle();
+    }
+
+    protected void generateGraph() {
 		vFactory = MyVertexFactory.getInstance();
 		eFactory = MyEdgeFactory.getInstance();
 		vertexList = new LinkedList<MyVertex>();
 		int number = (Integer)vertexSpinner.getValue();
-		double probability = 0.6;
-		g = new DirectedSparseGraph<MyVertex, MyEdge>();
+		double probability = 0.8;
+		g = new SparseMultigraph<MyVertex, MyEdge>();
 		for (int i=0;i<number;i++) {
 			vertexList.add(vFactory.create());
 			g.addVertex(vertexList.get(i));
@@ -188,7 +212,6 @@ public class MainWindow extends JFrame {
 
 
 		contentPane.remove(graphPanel);
-
 		graphPanel = new JPanel();
 	//	graphPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 	//	graphPanel.setLayout(new BorderLayout(0, 0));
@@ -258,7 +281,7 @@ public class MainWindow extends JFrame {
             for (MyEdge edge : g.getIncidentEdges(vertex)) {
                 if (g.getSource(edge) == vertex) {
                     System.out.print(edge);
-                    if (Math.random() < 0.5) edge.setAsPartOfCycle();
+          //          if (Math.random() < 0.5) edge.setAsPartOfCycle();
                 }
             }
             System.out.println();

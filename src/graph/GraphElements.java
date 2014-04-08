@@ -25,6 +25,7 @@ public class GraphElements {
         private String name;
         private boolean packetSwitchCapable;
         private boolean tdmSwitchCapable;
+        private int number;
         
         public MyVertex(String name) {
             this.name = name;
@@ -56,6 +57,14 @@ public class GraphElements {
         
         public String toString() {
             return name;
+        }
+
+        public void setNumber(int number) {
+            this.number = number;
+        }
+
+        public int getNumber() {
+            return number;
         }
     }
     
@@ -120,10 +129,12 @@ public class GraphElements {
         }
         
         public GraphElements.MyVertex create() {
-            String name = "V" + nodeCount++;
+            String name = "V" + nodeCount;
             MyVertex v = new MyVertex(name);
+            v.setNumber(nodeCount);
             v.setPacketSwitchCapable(defaultPSC);
             v.setTdmSwitchCapable(defaultTDM);
+            nodeCount++;
             return v;
         }        
 
