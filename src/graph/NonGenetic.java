@@ -9,7 +9,7 @@ import java.util.LinkedList;
  * @author Jakub Fortunka
  *
  */
-public class Algorithms {
+public class NonGenetic implements Algorithm {
 
     int count=0,no=1;
     SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge> g;
@@ -18,7 +18,7 @@ public class Algorithms {
     LinkedList<GraphElements.MyVertex> path = new LinkedList<GraphElements.MyVertex>();
     GraphElements.MyVertex start;
 
-    public Algorithms(SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge> g, GraphElements.MyVertex starter) {
+    public NonGenetic(SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge> g, GraphElements.MyVertex starter) {
         N = g.getVertexCount();
         visitedVertex = new boolean[N];
         for (int i=0;i<N;i++) visitedVertex[i]=false;
@@ -27,6 +27,7 @@ public class Algorithms {
 
     }
 
+    @Override
     public LinkedList<GraphElements.MyVertex> getCycle() {
         if (searchForCycle(start)) return path;
         else return null;

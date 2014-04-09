@@ -12,6 +12,7 @@ import graph.GraphElements.MyEdge;
 import graph.GraphElements.MyEdgeFactory;
 import graph.GraphElements.MyVertex;
 import graph.GraphElements.MyVertexFactory;
+import org.apache.commons.collections15.Transformer;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -19,8 +20,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.LinkedList;
-
-import org.apache.commons.collections15.Transformer;
 
 public class MainWindow extends JFrame {
 
@@ -172,7 +171,7 @@ public class MainWindow extends JFrame {
 	}
 
     private LinkedList<MyVertex> findPath() {
-        Algorithms al = new Algorithms(g,vertexList.get(0));
+        Algorithm al = new NonGenetic(g,vertexList.get(0));
         return al.getCycle();
     }
 
