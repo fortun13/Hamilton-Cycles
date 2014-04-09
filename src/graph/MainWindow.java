@@ -2,6 +2,7 @@ package graph;
 
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
+import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
@@ -16,6 +17,7 @@ import org.apache.commons.collections15.Transformer;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,8 +34,8 @@ public class MainWindow extends JFrame {
 
 	private Layout<GraphElements.MyVertex, GraphElements.MyEdge> layout;
 
-    private MyVertexFactory vFactory;
-	private MyEdgeFactory eFactory;
+    private MyVertexFactory vFactory = MyVertexFactory.getInstance();
+	private MyEdgeFactory eFactory = MyEdgeFactory.getInstance();
 
 	private VisualizationViewer<GraphElements.MyVertex,GraphElements.MyEdge> vv;
 	
@@ -66,40 +68,7 @@ public class MainWindow extends JFrame {
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
 
-	//	vFactory = MyVertexFactory.getInstance();
-	//	eFactory = MyEdgeFactory.getInstance();
-
-		//	g = new SparseMultigraph<>();
-
-		//	this.setupGraph();
-
-		// Create a graph mouse and add it to the visualization viewer
-		/*EditingModalGraphMouse gm = new EditingModalGraphMouse(vv.getRenderContext(), 
-                 GraphElements.MyVertexFactory.getInstance(),
-                GraphElements.MyEdgeFactory.getInstance()); */
-		/*		EditingModalGraphMouse<MyVertex, MyEdge> gm = new EditingModalGraphMouse<GraphElements.MyVertex, GraphElements.MyEdge>(
-				vv.getRenderContext(),
-				vFactory,
-				eFactory);
-
-		// Set some defaults for the Edges...
-		GraphElements.MyEdgeFactory.setDefaultCapacity(192.0);
-		GraphElements.MyEdgeFactory.setDefaultWeight(5.0);
-		// Trying out our new popup menu mouse plugin...
-		PopupVertexEdgeMenuMousePlugin myPlugin = new PopupVertexEdgeMenuMousePlugin();
-		// Add some popup menus for the edges and vertices to our mouse plugin.
-		JPopupMenu edgeMenu = new MyMouseMenus.EdgeMenu(this);
-		JPopupMenu vertexMenu = new MyMouseMenus.VertexMenu();
-		myPlugin.setEdgePopup(edgeMenu);
-		myPlugin.setVertexPopup(vertexMenu);
-		gm.remove(gm.getPopupEditingPlugin());  // Removes the existing popup editing plugin
-
-		gm.add(myPlugin);   // Add our new plugin to the mouse
-
-		vv.setGraphMouse(gm);*/
-
-
-		//JFrame frame = new JFrame("Editing and Mouse Menu Demo");
+        setTitle("Hamilton Cycle");
 
 		JPanel panel = new JPanel();
 		contentPane.add(panel, BorderLayout.NORTH);
@@ -141,7 +110,6 @@ public class MainWindow extends JFrame {
                     }
                     MyEdge edge = g.findEdge(path.get(path.size()-1),path.get(0));
                     edge.setAsPartOfCycle();
-                    // Still don't know how to redraw graph...
                     contentPane.repaint();
                 }
                 System.out.println(path);
@@ -153,20 +121,6 @@ public class MainWindow extends JFrame {
 		graphPanel = new JPanel();
 		contentPane.add(graphPanel, BorderLayout.CENTER);
 
-		//		contentPane.add(vv);
-
-		// Let's add a menu for changing mouse modes
-		/*		JMenuBar menuBar = new JMenuBar();
-		JMenu modeMenu = gm.getModeMenu();
-		modeMenu.setText("Mouse Mode");
-		modeMenu.setIcon(null); // I'm using this in a main menu
-		modeMenu.setPreferredSize(new Dimension(120,20)); // Change the size so I can see the text
-
-		menuBar.add(modeMenu);
-		this.setJMenuBar(menuBar);
-		gm.setMode(ModalGraphMouse.Mode.EDITING); // Start off in editing mode
-		this.pack();*/
-
 		this.setVisible(true);    
 	}
 
@@ -176,11 +130,11 @@ public class MainWindow extends JFrame {
     }
 
     protected void generateGraph() {
-		vFactory = MyVertexFactory.getInstance();
-		eFactory = MyEdgeFactory.getInstance();
+        eFactory.resetFactory();
+        vFactory.resetFactory();
 		vertexList = new LinkedList<MyVertex>();
 		int number = (Integer)vertexSpinner.getValue();
-		double probability = 0.8;
+		double probability = 0.5;
 		g = new SparseMultigraph<MyVertex, MyEdge>();
 		for (int i=0;i<number;i++) {
 			vertexList.add(vFactory.create());
@@ -196,25 +150,14 @@ public class MainWindow extends JFrame {
 		}
 
         printGraphToSysOut();
-		//	vv.repaint();
-		//	contentPane.repaint();
 		setupGraph();
 		this.pack();
-//        System.out.println(vv.get);
-		//	contentPane.repaint();
-	//	contentPane.repaint();
 	}
 
 	private void setupGraph() {
-		//		g.addVertex(vFactory.create());
-		//		g.addVertex(vFactory.create());
-
 
 		contentPane.remove(graphPanel);
 		graphPanel = new JPanel();
-	//	graphPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-	//	graphPanel.setLayout(new BorderLayout(0, 0));
-		
 		
 		layout = new CircleLayout<MyVertex, MyEdge>(g);
 		layout.setSize(new Dimension(500,500));
@@ -228,7 +171,7 @@ public class MainWindow extends JFrame {
         Transformer<MyEdge,Paint> edgeTransform = new Transformer<MyEdge, Paint>() {
             @Override
             public Paint transform(MyEdge myEdge) {
-                if (myEdge.isPartOfCycle()) return Color.RED;
+                if (myEdge.isPartOfCycle()) return Color.GREEN;
                 else return Color.BLACK;
             }
         };
@@ -242,9 +185,6 @@ public class MainWindow extends JFrame {
 
         vv.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.N);
 
-
-		GraphElements.MyEdgeFactory.setDefaultCapacity(192.0);
-		GraphElements.MyEdgeFactory.setDefaultWeight(5.0);
 		// Trying out our new popup menu mouse plugin...
 		PopupVertexEdgeMenuMousePlugin myPlugin = new PopupVertexEdgeMenuMousePlugin();
 		// Add some popup menus for the edges and vertices to our mouse plugin.
