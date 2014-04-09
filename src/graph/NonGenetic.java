@@ -11,12 +11,12 @@ import java.util.LinkedList;
  */
 public class NonGenetic implements Algorithm {
 
-    int count=0,no=1;
-    SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge> g;
-    int N;
-    boolean[] visitedVertex;
-    LinkedList<GraphElements.MyVertex> path = new LinkedList<GraphElements.MyVertex>();
-    GraphElements.MyVertex start;
+    private int count=0,no=1;
+    private SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge> g;
+    private int N;
+    private boolean[] visitedVertex;
+    private LinkedList<GraphElements.MyVertex> path = new LinkedList<GraphElements.MyVertex>();
+    private GraphElements.MyVertex start;
 
     public NonGenetic(SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge> g, GraphElements.MyVertex starter) {
         N = g.getVertexCount();

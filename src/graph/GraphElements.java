@@ -136,7 +136,7 @@ public class GraphElements {
             v.setTdmSwitchCapable(defaultTDM);
             nodeCount++;
             return v;
-        }        
+        }
 
         public static boolean isDefaultPSC() {
             return defaultPSC;
@@ -153,6 +153,8 @@ public class GraphElements {
         public static void setDefaultTDM(boolean aDefaultTDM) {
             defaultTDM = aDefaultTDM;
         }
+
+        public static void resetFactory() { nodeCount = 0; }
     }
     
     // Singleton factory for creating Edges...
@@ -176,7 +178,7 @@ public class GraphElements {
             link.setWeight(defaultWeight);
             link.setCapacity(defaultCapacity);
             return link;
-        }    
+        }
 
         public static double getDefaultWeight() {
             return defaultWeight;
@@ -193,7 +195,8 @@ public class GraphElements {
         public static void setDefaultCapacity(double aDefaultCapacity) {
             defaultCapacity = aDefaultCapacity;
         }
-        
+
+        public static void resetFactory() { linkCount = 0;}
     }
 
 }
