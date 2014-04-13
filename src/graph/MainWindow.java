@@ -21,6 +21,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -103,6 +104,9 @@ public class MainWindow extends JFrame {
         btnFindPath.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                Iterator<MyEdge> it = g.getEdges().iterator();
+                while(it.hasNext())
+                   it.next().setNotAsPartOfCycle();
                 LinkedList<MyVertex> path = findPath();
                 if (!(path == null)) {
                     for (int i = 0; i < path.size() - 1; i++) {
@@ -126,7 +130,7 @@ public class MainWindow extends JFrame {
     }
 
     private LinkedList<MyVertex> findPath() {
-        int i=0;
+        int i = 0;
         Algorithm al = null;
         Random rnd = new Random();
         int randomVertex = rnd.nextInt(g.getVertexCount());

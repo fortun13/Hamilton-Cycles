@@ -109,6 +109,10 @@ public class GraphElements {
             isPartOfCycle = true;
         }
 
+        public void setNotAsPartOfCycle() {
+            isPartOfCycle = false;
+        }
+
         public boolean isPartOfCycle() {
             return isPartOfCycle;
         }
