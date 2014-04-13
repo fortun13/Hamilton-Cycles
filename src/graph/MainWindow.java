@@ -25,68 +25,68 @@ import java.util.LinkedList;
 
 public class MainWindow extends JFrame {
 
-	private JPanel contentPane;
-	private SparseMultigraph<MyVertex, MyEdge> g;
+    private JPanel contentPane;
+    private SparseMultigraph<MyVertex, MyEdge> g;
 
-	private JSpinner vertexSpinner;
+    private JSpinner vertexSpinner;
 
-	private LinkedList<MyVertex> vertexList = new LinkedList<MyVertex>();
+    private LinkedList<MyVertex> vertexList = new LinkedList<MyVertex>();
 
-	private Layout<GraphElements.MyVertex, GraphElements.MyEdge> layout;
+    private Layout<GraphElements.MyVertex, GraphElements.MyEdge> layout;
 
     private MyVertexFactory vFactory = MyVertexFactory.getInstance();
-	private MyEdgeFactory eFactory = MyEdgeFactory.getInstance();
+    private MyEdgeFactory eFactory = MyEdgeFactory.getInstance();
 
-	private VisualizationViewer<GraphElements.MyVertex,GraphElements.MyEdge> vv;
-	
-	private JPanel graphPanel;
+    private VisualizationViewer<GraphElements.MyVertex, GraphElements.MyEdge> vv;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					MainWindow frame = new MainWindow();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+    private JPanel graphPanel;
 
-	/**
-	 * Create the frame.
-	 */
-	public MainWindow() {
-		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		contentPane.setLayout(new BorderLayout(0, 0));
-		setContentPane(contentPane);
+    /**
+     * Launch the application.
+     */
+    public static void main(String[] args) {
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                try {
+                    MainWindow frame = new MainWindow();
+                    frame.setVisible(true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    /**
+     * Create the frame.
+     */
+    public MainWindow() {
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setBounds(100, 100, 600, 600);
+        contentPane = new JPanel();
+        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        contentPane.setLayout(new BorderLayout(0, 0));
+        setContentPane(contentPane);
 
         setTitle("Hamilton Cycle");
 
-		JPanel panel = new JPanel();
-		contentPane.add(panel, BorderLayout.NORTH);
+        JPanel panel = new JPanel();
+        contentPane.add(panel, BorderLayout.NORTH);
 
-		JButton btnGenerate = new JButton("Generate");
-		btnGenerate.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if ((Integer)vertexSpinner.getValue() > 0) generateGraph();
-			}
-		});
-		panel.add(btnGenerate);
+        JButton btnGenerate = new JButton("Generate");
+        btnGenerate.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if ((Integer) vertexSpinner.getValue() > 0) generateGraph();
+            }
+        });
+        panel.add(btnGenerate);
 
-		JLabel lblVertex = new JLabel("Vertex");
-		panel.add(lblVertex);
+        JLabel lblVertex = new JLabel("Vertex");
+        panel.add(lblVertex);
 
-		vertexSpinner = new JSpinner();
+        vertexSpinner = new JSpinner();
         vertexSpinner.setValue(4);
-		panel.add(vertexSpinner);
+        panel.add(vertexSpinner);
 
         JButton btnShowGraph = new JButton("GraphToSystemOut");
         btnShowGraph.addActionListener(new ActionListener() {
@@ -108,7 +108,7 @@ public class MainWindow extends JFrame {
                         MyEdge edge = g.findEdge(path.get(i), path.get(i + 1));
                         edge.setAsPartOfCycle();
                     }
-                    MyEdge edge = g.findEdge(path.get(path.size()-1),path.get(0));
+                    MyEdge edge = g.findEdge(path.get(path.size() - 1), path.get(0));
                     edge.setAsPartOfCycle();
                     contentPane.repaint();
                 }
@@ -118,57 +118,57 @@ public class MainWindow extends JFrame {
 
         panel.add(btnFindPath);
 
-		graphPanel = new JPanel();
-		contentPane.add(graphPanel, BorderLayout.CENTER);
-
-		this.setVisible(true);    
-	}
+        graphPanel = new JPanel();
+        contentPane.add(graphPanel, BorderLayout.CENTER);
+        setupMenu();
+        this.setVisible(true);
+    }
 
     private LinkedList<MyVertex> findPath() {
-        Algorithm al = new NonGenetic(g,vertexList.get(0));
+        Algorithm al = new NonGenetic(g, vertexList.get(0));
         return al.getCycle();
     }
 
     protected void generateGraph() {
         eFactory.resetFactory();
         vFactory.resetFactory();
-		vertexList = new LinkedList<MyVertex>();
-		int number = (Integer)vertexSpinner.getValue();
-		double probability = 0.5;
-		g = new SparseMultigraph<MyVertex, MyEdge>();
-		for (int i=0;i<number;i++) {
-			vertexList.add(vFactory.create());
-			g.addVertex(vertexList.get(i));
-		}
-		for(int i=0; i<number; i++){
-			for(int j=i+1; j<number; j++){
-				if(Math.random() < probability) {
-					g.addEdge(eFactory.create(), vertexList.get(i), vertexList.get(j));
+        vertexList = new LinkedList<MyVertex>();
+        int number = (Integer) vertexSpinner.getValue();
+        double probability = 0.5;
+        g = new SparseMultigraph<MyVertex, MyEdge>();
+        for (int i = 0; i < number; i++) {
+            vertexList.add(vFactory.create());
+            g.addVertex(vertexList.get(i));
+        }
+        for (int i = 0; i < number; i++) {
+            for (int j = i + 1; j < number; j++) {
+                if (Math.random() < probability) {
+                    g.addEdge(eFactory.create(), vertexList.get(i), vertexList.get(j));
 
-				} 
-			}
-		}
+                }
+            }
+        }
 
         printGraphToSysOut();
-		setupGraph();
-		this.pack();
-	}
+        setupGraph();
+        this.pack();
+    }
 
-	private void setupGraph() {
+    private void setupGraph() {
 
-		contentPane.remove(graphPanel);
-		graphPanel = new JPanel();
-		
-		layout = new CircleLayout<MyVertex, MyEdge>(g);
-		layout.setSize(new Dimension(500,500));
-		vv = new VisualizationViewer<GraphElements.MyVertex,GraphElements.MyEdge>(layout);
-		vv.setPreferredSize(new Dimension(550,550));
-		// Show vertex and edge labels
-		vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
-		vv.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller());
+        contentPane.remove(graphPanel);
+        graphPanel = new JPanel();
+
+        layout = new CircleLayout<MyVertex, MyEdge>(g);
+        layout.setSize(new Dimension(500, 500));
+        vv = new VisualizationViewer<GraphElements.MyVertex, GraphElements.MyEdge>(layout);
+        vv.setPreferredSize(new Dimension(550, 550));
+        // Show vertex and edge labels
+        vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
+        vv.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller());
 
 
-        Transformer<MyEdge,Paint> edgeTransform = new Transformer<MyEdge, Paint>() {
+        Transformer<MyEdge, Paint> edgeTransform = new Transformer<MyEdge, Paint>() {
             @Override
             public Paint transform(MyEdge myEdge) {
                 if (myEdge.isPartOfCycle()) return Color.GREEN;
@@ -177,42 +177,42 @@ public class MainWindow extends JFrame {
         };
 
         EditingModalGraphMouse<MyVertex, MyEdge> gm = new EditingModalGraphMouse<GraphElements.MyVertex, GraphElements.MyEdge>(
-				vv.getRenderContext(),
-				vFactory,
-				eFactory);
+                vv.getRenderContext(),
+                vFactory,
+                eFactory);
 
         vv.getRenderContext().setEdgeDrawPaintTransformer(edgeTransform);
 
         vv.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.N);
 
-		// Trying out our new popup menu mouse plugin...
-		PopupVertexEdgeMenuMousePlugin myPlugin = new PopupVertexEdgeMenuMousePlugin();
-		// Add some popup menus for the edges and vertices to our mouse plugin.
-		JPopupMenu edgeMenu = new MyMouseMenus.EdgeMenu(this);
-		JPopupMenu vertexMenu = new MyMouseMenus.VertexMenu();
-		myPlugin.setEdgePopup(edgeMenu);
-		myPlugin.setVertexPopup(vertexMenu);
-		gm.remove(gm.getPopupEditingPlugin());  // Removes the existing popup editing plugin
+        // Trying out our new popup menu mouse plugin...
+        PopupVertexEdgeMenuMousePlugin myPlugin = new PopupVertexEdgeMenuMousePlugin();
+        // Add some popup menus for the edges and vertices to our mouse plugin.
+        JPopupMenu edgeMenu = new MyMouseMenus.EdgeMenu(this);
+        JPopupMenu vertexMenu = new MyMouseMenus.VertexMenu();
+        myPlugin.setEdgePopup(edgeMenu);
+        myPlugin.setVertexPopup(vertexMenu);
+        gm.remove(gm.getPopupEditingPlugin());  // Removes the existing popup editing plugin
 
-		gm.add(myPlugin);   // Add our new plugin to the mouse
+        gm.add(myPlugin);   // Add our new plugin to the mouse
 
-		vv.setGraphMouse(gm);
+        vv.setGraphMouse(gm);
 
-		graphPanel.add(vv);
+        graphPanel.add(vv);
 
-		JMenuBar menuBar = new JMenuBar();
-		JMenu modeMenu = gm.getModeMenu();
-		modeMenu.setText("Mouse Mode");
-		modeMenu.setIcon(null); // I'm using this in a main menu
-		modeMenu.setPreferredSize(new Dimension(120,20)); // Change the size so I can see the text
+        JMenuBar menuBar = new JMenuBar();
+        JMenu modeMenu = gm.getModeMenu();
+        modeMenu.setText("Mouse Mode");
+        modeMenu.setIcon(null); // I'm using this in a main menu
+        modeMenu.setPreferredSize(new Dimension(120, 20)); // Change the size so I can see the text
 
-		menuBar.add(modeMenu);
-		this.setJMenuBar(menuBar);
-		gm.setMode(ModalGraphMouse.Mode.TRANSFORMING); // Start off in editing mode
-		
-		contentPane.add(graphPanel);
+        menuBar.add(modeMenu);
+        this.setJMenuBar(menuBar);
+        gm.setMode(ModalGraphMouse.Mode.TRANSFORMING); // Start off in editing mode
 
-	}
+        contentPane.add(graphPanel);
+
+    }
 
     private void printGraphToSysOut() {
         for (MyVertex vertex : g.getVertices()) {
@@ -220,11 +220,26 @@ public class MainWindow extends JFrame {
             for (MyEdge edge : g.getIncidentEdges(vertex)) {
                 if (g.getSource(edge) == vertex) {
                     System.out.print(edge);
-          //          if (Math.random() < 0.5) edge.setAsPartOfCycle();
+                    //          if (Math.random() < 0.5) edge.setAsPartOfCycle();
                 }
             }
             System.out.println();
         }
         System.out.println("---------------------------------------------");
+    }
+
+    /* Działa analogicznie do generateGraph tylko tworzy graf o jednym wierzchołku. Próba stworzenia "pustego" grafu
+     * zakończona niepowodzeniem - po dorysowaniu krawędzi i wierzchołków nie da się szukać cyklu, graf dalej jest traktowany jako pusty.
+      * Pytanie jak to obejść? - Krzysiek*/
+    private void setupMenu() {
+        eFactory.resetFactory();
+        vFactory.resetFactory();
+        vertexList = new LinkedList<MyVertex>();
+        g = new SparseMultigraph<MyVertex, MyEdge>();
+        vertexList.add(vFactory.create());
+        g.addVertex(vertexList.get(0));
+        setupGraph();
+        this.pack();
+        printGraphToSysOut();
     }
 }
