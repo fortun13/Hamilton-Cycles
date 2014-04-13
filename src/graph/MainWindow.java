@@ -22,6 +22,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.LinkedList;
+import java.util.Random;
 
 public class MainWindow extends JFrame {
 
@@ -125,13 +126,25 @@ public class MainWindow extends JFrame {
     }
 
     private LinkedList<MyVertex> findPath() {
-        Algorithm al = new NonGenetic(g, vertexList.get(0));
-        return al.getCycle();
+        int i=0;
+        Algorithm al = null;
+        Random rnd = new Random();
+        int randomVertex = rnd.nextInt(g.getVertexCount());
+        for (MyVertex v : g.getVertices()) {
+            if (randomVertex == i) {
+                al = new NonGenetic(g, v);
+                break;
+            }
+            i++;
+        }
+        if (al == null) return null;
+        else return al.getCycle();
     }
 
     protected void generateGraph() {
         eFactory.resetFactory();
         vFactory.resetFactory();
+
         vertexList = new LinkedList<MyVertex>();
         int number = (Integer) vertexSpinner.getValue();
         double probability = 0.5;
@@ -144,7 +157,6 @@ public class MainWindow extends JFrame {
             for (int j = i + 1; j < number; j++) {
                 if (Math.random() < probability) {
                     g.addEdge(eFactory.create(), vertexList.get(i), vertexList.get(j));
-
                 }
             }
         }
@@ -218,10 +230,7 @@ public class MainWindow extends JFrame {
         for (MyVertex vertex : g.getVertices()) {
             System.out.println(vertex);
             for (MyEdge edge : g.getIncidentEdges(vertex)) {
-                if (g.getSource(edge) == vertex) {
-                    System.out.print(edge);
-                    //          if (Math.random() < 0.5) edge.setAsPartOfCycle();
-                }
+                if (g.getSource(edge) == vertex) System.out.print(edge);
             }
             System.out.println();
         }
@@ -236,8 +245,8 @@ public class MainWindow extends JFrame {
         vFactory.resetFactory();
         vertexList = new LinkedList<MyVertex>();
         g = new SparseMultigraph<MyVertex, MyEdge>();
-        vertexList.add(vFactory.create());
-        g.addVertex(vertexList.get(0));
+    //    vertexList.add(vFactory.create());
+    //    g.addVertex(vertexList.get(0));
         setupGraph();
         this.pack();
         printGraphToSysOut();
