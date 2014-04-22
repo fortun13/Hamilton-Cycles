@@ -2,7 +2,6 @@ package graph;
 
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
-import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
@@ -17,11 +16,9 @@ import org.apache.commons.collections15.Transformer;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -104,17 +101,15 @@ public class MainWindow extends JFrame {
         btnFindPath.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Iterator<MyEdge> it = g.getEdges().iterator();
-                while(it.hasNext())
-                   it.next().setNotAsPartOfCycle();
+                for (MyEdge myEdge : g.getEdges()) myEdge.setNotAsPartOfCycle();
                 LinkedList<MyVertex> path = findPath();
                 if (!(path == null)) {
                     for (int i = 0; i < path.size() - 1; i++) {
                         MyEdge edge = g.findEdge(path.get(i), path.get(i + 1));
                         edge.setAsPartOfCycle();
                     }
-                    MyEdge edge = g.findEdge(path.get(path.size() - 1), path.get(0));
-                    edge.setAsPartOfCycle();
+//                    MyEdge edge = g.findEdge(path.get(path.size() - 1), path.get(0));
+//                    edge.setAsPartOfCycle();
                     contentPane.repaint();
                 }
                 System.out.println(path);
@@ -134,9 +129,10 @@ public class MainWindow extends JFrame {
         Algorithm al = null;
         Random rnd = new Random();
         int randomVertex = rnd.nextInt(g.getVertexCount());
-        for (MyVertex v : g.getVertices()) {
+        // I don't understand that loop
+        for (MyVertex ignored : g.getVertices()) {
             if (randomVertex == i) {
-                al = new NonGenetic(g, v);
+                al = new FirstVer(g);//NonGenetic(g, v);
                 break;
             }
             i++;
@@ -146,8 +142,8 @@ public class MainWindow extends JFrame {
     }
 
     protected void generateGraph() {
-        eFactory.resetFactory();
-        vFactory.resetFactory();
+        MyEdgeFactory.resetFactory();
+        MyVertexFactory.resetFactory();
 
         vertexList = new LinkedList<MyVertex>();
         int number = (Integer) vertexSpinner.getValue();
@@ -245,8 +241,8 @@ public class MainWindow extends JFrame {
      * zakończona niepowodzeniem - po dorysowaniu krawędzi i wierzchołków nie da się szukać cyklu, graf dalej jest traktowany jako pusty.
       * Pytanie jak to obejść? - Krzysiek*/
     private void setupMenu() {
-        eFactory.resetFactory();
-        vFactory.resetFactory();
+        MyEdgeFactory.resetFactory();
+        MyVertexFactory.resetFactory();
         vertexList = new LinkedList<MyVertex>();
         g = new SparseMultigraph<MyVertex, MyEdge>();
     //    vertexList.add(vFactory.create());
