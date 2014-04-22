@@ -20,7 +20,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.LinkedList;
-import java.util.Random;
 
 public class MainWindow extends JFrame {
 
@@ -125,20 +124,8 @@ public class MainWindow extends JFrame {
     }
 
     private LinkedList<MyVertex> findPath() {
-        int i = 0;
-        Algorithm al = null;
-        Random rnd = new Random();
-        int randomVertex = rnd.nextInt(g.getVertexCount());
-        // I don't understand that loop
-        for (MyVertex ignored : g.getVertices()) {
-            if (randomVertex == i) {
-                al = new FirstVer(g);//NonGenetic(g, v);
-                break;
-            }
-            i++;
-        }
-        if (al == null) return null;
-        else return al.getCycle();
+        Algorithm al = new FirstVer(g);
+        return al.getCycle();
     }
 
     protected void generateGraph() {

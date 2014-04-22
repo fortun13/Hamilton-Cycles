@@ -3,6 +3,7 @@ package graph;
 import edu.uci.ics.jung.graph.SparseMultigraph;
 
 import java.util.LinkedList;
+import java.util.Random;
 
 
 /**
@@ -18,13 +19,21 @@ public class NonGenetic implements Algorithm {
     private LinkedList<GraphElements.MyVertex> path = new LinkedList<GraphElements.MyVertex>();
     private GraphElements.MyVertex start;
 
-    public NonGenetic(SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge> g, GraphElements.MyVertex starter) {
+    public NonGenetic(SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge> g) {
         N = g.getVertexCount();
         visitedVertex = new boolean[N];
         for (int i=0;i<N;i++) visitedVertex[i]=false;
         this.g = g;
-        start = starter;
-
+        int i = 0;
+        Random rnd = new Random();
+        int randomVertex = rnd.nextInt(g.getVertexCount());
+        for (GraphElements.MyVertex v : g.getVertices()) {
+            if (randomVertex == i) {
+                start = v;
+                break;
+            }
+            i++;
+        }
     }
 
     @Override
