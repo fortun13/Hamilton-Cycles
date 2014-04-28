@@ -33,17 +33,18 @@ public class FirstVer implements Algorithm {
 
         for (int i = 0; i < 10; i++) population.add(new Unit());
 
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 500; i++) {
             int matches = 0, deaths = 0, births = 0; //debug variables
             for (Unit unit : population) {
                 if (unit.longestPath.size() == g.getVertexCount() + 1) {
 
-                    HashMap<ArrayList<City>, Integer> species = new HashMap<ArrayList<City>, Integer>();
+                    LinkedHashMap<ArrayList<City>, Integer> species = new LinkedHashMap<ArrayList<City>, Integer>();
                     for (Unit u : population) {
                         Integer a = species.get(u.genome);
                         species.put(u.genome, a == null ? 1 : a + 1);
                     }
 //        spices output
+
                     for (Map.Entry<ArrayList<City>, Integer> entry : species.entrySet()) {
                         System.out.println("entry = " + entry);
                     }
@@ -98,7 +99,7 @@ public class FirstVer implements Algorithm {
             }
 
             // debug output
-            System.out.println("population = " + population.size() +
+            System.out.println(i + ": population = " + population.size() +
                     " matches = " + matches +
                     " deaths = " + deaths +
                     " births = " + births +
@@ -135,7 +136,7 @@ public class FirstVer implements Algorithm {
      * Class witch represents an unit of population
      */
     private class Unit {
-        public final LinkedList<City> longestPath;
+        public final HashSet<City> longestPath;
         private final ArrayList<City> genome;
         private ArrayList<City> newGenome = null;
         private int age;
@@ -168,7 +169,7 @@ public class FirstVer implements Algorithm {
          * Method used by constructors to find out longest path in graph witch is strongest trait of unit
          * @return longest path in analysed graph
          */
-        private LinkedList<City> calculateMaxTrace() {
+        private HashSet<City> calculateMaxTrace() {
             HashMap<City, LinkedList<City>> traces = new HashMap<City, LinkedList<City>>(genome.size());
 
             //Each city is end point of one path:
@@ -205,7 +206,7 @@ public class FirstVer implements Algorithm {
                 } while (true);
                 if (nextTrace != null && nextTrace.size() > longestTrace.size()) longestTrace = nextTrace;
             }
-            return longestTrace;
+            return new HashSet<City>(longestTrace);
         }
 
         /**
@@ -230,17 +231,25 @@ public class FirstVer implements Algorithm {
          * @return result of mating
          */
         public boolean match(Unit partner) {
-            HashSet<City> tmp = new HashSet<City>(partner.longestPath),
-                    meDiffPartner = new HashSet<City>(longestPath),
-                    union = new HashSet<City>(longestPath);
-            meDiffPartner.removeAll(tmp);
-            union.addAll(tmp);
+            int sum, intersection;
+            sum = intersection = longestPath.size();
 
-            if (union.size() == 0) return false; // no neighbours
+            for (City city : partner.longestPath) {
+                if (longestPath.contains(city)) {
+                    --intersection;
+                } else {
+                    ++sum;
+                }
+            }
 
-            // strength of like is seen as intersection/union of genomes
-            return randomize.nextInt(100) <
-                            (100*(longestPath.size() - meDiffPartner.size())) / union.size() && partner.inject(genome);
+            return randomize.nextInt(100) < (sum != 0 ? 100 * (longestPath.size() - intersection + 1) / sum : 0)
+                    && partner.inject(genome);
+//
+//            if (union.size() == 0) return false; // no neighbours
+//
+//            // strength of like is seen as intersection/union of genomes
+//            return randomize.nextInt(100) <
+//                            (100*(longestPath.size() - meDiffPartner.size())) / union.size() && partner.inject(genome);
         }
 
         /**
