@@ -12,10 +12,12 @@ import graph.GraphElements.MyEdge;
 import graph.GraphElements.MyEdgeFactory;
 import graph.GraphElements.MyVertex;
 import graph.GraphElements.MyVertexFactory;
+
 import org.apache.commons.collections15.Transformer;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -31,6 +33,10 @@ public class MainWindow extends JFrame {
     private JSpinner maxSpinner;
     private JSpinner iterationsSpinner;
     private JSpinner starterSpinner;
+    
+    private JCheckBox debugMode;
+    
+    private JComboBox<String> algorithmList;
 
 	private LinkedList<MyVertex> vertexList = new LinkedList<MyVertex>();
 
@@ -94,6 +100,18 @@ public class MainWindow extends JFrame {
 
 		JButton btnFindPath = new JButton("FindCycle");
 		panelUp.add(btnFindPath);
+		
+		debugMode = new JCheckBox("DEBUG");
+		debugMode.setSelected(true);
+		panelUp.add(debugMode);
+		
+		JLabel lblVersionOfAlgorithm = new JLabel("Version of Algorithm");
+		panelUp.add(lblVersionOfAlgorithm);
+		
+		algorithmList = new JComboBox<String>();
+		algorithmList.addItem("Simple Algorithm");
+		algorithmList.addItem("Genetic Algorithm");
+		panelUp.add(algorithmList);
 		btnFindPath.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -161,8 +179,14 @@ public class MainWindow extends JFrame {
 	}
 
 	private LinkedList<MyVertex> findPath() {
-		Algorithm al = new FirstVer(g,(Integer) starterSpinner.getValue(),
-                (Integer)iterationsSpinner.getValue(), (Integer)minSpinner.getValue(), (Integer)maxSpinner.getValue());
+        Algorithm al = null;
+        if (algorithmList.getSelectedIndex() == 0) al = new NonGenetic(g);
+		else {
+            al = new FirstVer(g,(Integer) starterSpinner.getValue(),
+                    (Integer)iterationsSpinner.getValue(), (Integer)minSpinner.getValue(), (Integer)maxSpinner.getValue());
+            if (debugMode.isSelected()) ((FirstVer)al).setDebugModeOn();
+            else ((FirstVer)al).setDebugModeOff();
+        }
 		return al.getCycle();
 	}
 

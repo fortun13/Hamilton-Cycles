@@ -19,6 +19,8 @@ public class NonGenetic implements Algorithm {
     private LinkedList<GraphElements.MyVertex> path = new LinkedList<GraphElements.MyVertex>();
     private GraphElements.MyVertex start;
 
+    private static boolean debugMode = false;
+
     public NonGenetic(SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge> g) {
         N = g.getVertexCount();
         visitedVertex = new boolean[N];
@@ -65,5 +67,12 @@ public class NonGenetic implements Algorithm {
         return false;
     }
 
+    public void setDebugModeOn() {
+        debugMode = true;
+    }
+
+    public void setDebugModeOff() {
+        debugMode = false;
+    }
 
 }

@@ -18,6 +18,8 @@ public class FirstVer implements Algorithm {
     private int minimalPopulation;
     private int maximumPopulation;
 
+    private static boolean debugMode = true;
+
     /**
      * Constructor witch is used only tu set necessary parameters
      * @param g graph of connections between "cities"
@@ -51,8 +53,6 @@ public class FirstVer implements Algorithm {
     @Override
     public LinkedList<GraphElements.MyVertex> getCycle() {
         HashSet<Unit> population = new HashSet<Unit>();
-    //    minimalPopulation = 2;
-    //    maximumPopulation = 200;
 
         for (int i = 0; i < starterPopulation; i++) population.add(new Unit());
 
@@ -77,7 +77,7 @@ public class FirstVer implements Algorithm {
                 for (Unit partner : population) {
                     if (unit == partner) continue;  //don't try to inject into itself
                     if (unit.match(partner)) {
-                        ++matches;
+                        if (debugMode) ++matches;
                         break; //inject my genome if I likes him
                     }
                 }
@@ -99,7 +99,7 @@ public class FirstVer implements Algorithm {
                 if (str < objective)
                 //required strength varied with environment utilisation
                 {
-                    ++deaths;
+                    if (debugMode) ++deaths;
                     reducedPopulation.remove(unit);
                 }
             }
@@ -109,7 +109,7 @@ public class FirstVer implements Algorithm {
             for (Unit unit : population) {
                 Unit baby = unit.deliver();
                 if (baby != null) {
-                    ++births;
+                    if (debugMode) ++births;
                     extendedPopulation.add(baby);
                 }
             }
@@ -121,7 +121,7 @@ public class FirstVer implements Algorithm {
             }
 
             // debug output
-            System.out.println("population = " + population.size() +
+            if (debugMode) System.out.println("population = " + population.size() +
                     " matches = " + matches +
                     " deaths = " + deaths +
                     " births = " + births +
@@ -383,5 +383,13 @@ public class FirstVer implements Algorithm {
         public String toString() {
             return location.getName() + "->" + nextLocation.getName();
         }
+    }
+
+    public void setDebugModeOn() {
+        debugMode = true;
+    }
+
+    public void setDebugModeOff() {
+        debugMode = false;
     }
 }
