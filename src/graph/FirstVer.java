@@ -13,13 +13,35 @@ public class FirstVer implements Algorithm {
     Collection<GraphElements.MyVertex> vertices;
     private final Random randomize = new Random();
 
+    private int starterPopulation;
+    private int numberOfIterations;
+    private int minimalPopulation;
+    private int maximumPopulation;
+
     /**
      * Constructor witch is used only tu set necessary parameters
      * @param g graph of connections between "cities"
      */
     public FirstVer(SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge> g) {
+        this(g,10,1000,2,200);
+    }
+
+    /**
+     *
+     * @param g graph of connections between "cities"
+     * @param starterPopulation number of specimen in population by which algorithm will start
+     * @param numberOfIterations number of iterations of algorithm
+     * @param minimalPopulation minimal number of specimen in population in one generation
+     * @param maximumPopulation maximal number of specimen in population in one generation
+     */
+    public FirstVer(SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge> g,
+                    int starterPopulation, int numberOfIterations, int minimalPopulation, int maximumPopulation) {
         this.g = g;
         vertices = g.getVertices();
+        this.starterPopulation = starterPopulation;
+        this.numberOfIterations = numberOfIterations;
+        this.minimalPopulation = minimalPopulation;
+        this.maximumPopulation = maximumPopulation;
     }
 
     /**
@@ -29,11 +51,12 @@ public class FirstVer implements Algorithm {
     @Override
     public LinkedList<GraphElements.MyVertex> getCycle() {
         HashSet<Unit> population = new HashSet<Unit>();
-        final int min = 2, max = 200;
+    //    minimalPopulation = 2;
+    //    maximumPopulation = 200;
 
-        for (int i = 0; i < 10; i++) population.add(new Unit());
+        for (int i = 0; i < starterPopulation; i++) population.add(new Unit());
 
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < numberOfIterations; i++) {
             int matches = 0, deaths = 0, births = 0; //debug variables
             for (Unit unit : population) {
                 if (unit.longestPath.size() == g.getVertexCount() + 1) {
@@ -65,7 +88,7 @@ public class FirstVer implements Algorithm {
             for (Unit unit : population) {
                 // Warn: population size could change in earlier loop, so calculation must occur on each loop,
                 // or modify it accordingly
-                double environmentUtilisation = (double)(reducedPopulation.size() - min)/max;
+                double environmentUtilisation = (double)(reducedPopulation.size() - minimalPopulation)/maximumPopulation;
                 double str = (0.95 + randomize.nextDouble()/10)* unit.strength(), //strength with 10% random variation
                         //required strength varied with environment utilisation
                         objective = (environmentUtilisationCurve(environmentUtilisation)*vertices.size());
