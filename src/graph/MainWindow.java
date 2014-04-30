@@ -1,5 +1,9 @@
 package graph;
 
+import algorithm.Algorithm;
+import algorithm.FirstVer;
+import algorithm.NonGenetic;
+import chart.MyChartWindow;
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.SparseMultigraph;
@@ -12,12 +16,12 @@ import graph.GraphElements.MyEdge;
 import graph.GraphElements.MyEdgeFactory;
 import graph.GraphElements.MyVertex;
 import graph.GraphElements.MyVertexFactory;
-
 import org.apache.commons.collections15.Transformer;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -48,6 +52,8 @@ public class MainWindow extends JFrame {
 	private VisualizationViewer<GraphElements.MyVertex, GraphElements.MyEdge> vv;
 
 	private JPanel graphPanel;
+
+    private XYSeries[] series = new XYSeries[2];
 
 	/**
 	 * Launch the application.
@@ -174,6 +180,23 @@ public class MainWindow extends JFrame {
 
 		graphPanel = new JPanel();
 		contentPane.add(graphPanel, BorderLayout.CENTER);
+
+        series[0] = new XYSeries("Population Size Series");
+        series[1] = new XYSeries("Deaths");
+   /*     final XYSeriesCollection dataset = new XYSeriesCollection(this.series);
+        MyChartWindow chartPanel = new MyChartWindow(dataset);
+        contentPane.add(chartPanel, BorderLayout.SOUTH);*/
+
+        final XYSeriesCollection[] dataset = new XYSeriesCollection[2];
+        dataset[0] = new XYSeriesCollection(series[0]);
+        dataset[1] = new XYSeriesCollection(series[1]);
+        new Thread() {
+            @Override
+            public void run() {
+                MyChartWindow chart = new MyChartWindow(dataset);
+            }
+        }.start();
+
 		setupMenu();
 		this.setVisible(true);
 	}
@@ -183,10 +206,12 @@ public class MainWindow extends JFrame {
         if (algorithmList.getSelectedIndex() == 0) al = new NonGenetic(g);
 		else {
             al = new FirstVer(g,(Integer) starterSpinner.getValue(),
-                    (Integer)iterationsSpinner.getValue(), (Integer)minSpinner.getValue(), (Integer)maxSpinner.getValue());
+                    (Integer)iterationsSpinner.getValue(), (Integer)minSpinner.getValue(), (Integer)maxSpinner.getValue(),
+                    series);
             if (debugMode.isSelected()) ((FirstVer)al).setDebugModeOn();
             else ((FirstVer)al).setDebugModeOff();
         }
+
 		return al.getCycle();
 	}
 
@@ -275,6 +300,8 @@ public class MainWindow extends JFrame {
 
 		JPanel panel = new JPanel();
 		contentPane.add(panel, BorderLayout.EAST);
+
+
 
 	}
 

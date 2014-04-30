@@ -1,6 +1,8 @@
-package graph;
+package algorithm;
 
 import edu.uci.ics.jung.graph.SparseMultigraph;
+import graph.GraphElements;
+import org.jfree.data.xy.XYSeries;
 
 import java.util.*;
 
@@ -20,12 +22,14 @@ public class FirstVer implements Algorithm {
 
     private static boolean debugMode = true;
 
+    private XYSeries[] series;
+
     /**
      * Constructor witch is used only tu set necessary parameters
      * @param g graph of connections between "cities"
      */
     public FirstVer(SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge> g) {
-        this(g,10,1000,2,200);
+        this(g,10,1000,2,200, null);
     }
 
     /**
@@ -37,13 +41,15 @@ public class FirstVer implements Algorithm {
      * @param maximumPopulation maximal number of specimen in population in one generation
      */
     public FirstVer(SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge> g,
-                    int starterPopulation, int numberOfIterations, int minimalPopulation, int maximumPopulation) {
+                    int starterPopulation, int numberOfIterations, int minimalPopulation, int maximumPopulation,
+                    XYSeries[] series) {
         this.g = g;
         vertices = g.getVertices();
         this.starterPopulation = starterPopulation;
         this.numberOfIterations = numberOfIterations;
         this.minimalPopulation = minimalPopulation;
         this.maximumPopulation = maximumPopulation;
+        this.series = series;
     }
 
     /**
@@ -52,6 +58,7 @@ public class FirstVer implements Algorithm {
      */
     @Override
     public LinkedList<GraphElements.MyVertex> getCycle() {
+
         HashSet<Unit> population = new HashSet<Unit>();
 
         for (int i = 0; i < starterPopulation; i++) population.add(new Unit());
@@ -121,11 +128,17 @@ public class FirstVer implements Algorithm {
             }
 
             // debug output
-            if (debugMode) System.out.println("population = " + population.size() +
-                    " matches = " + matches +
-                    " deaths = " + deaths +
-                    " births = " + births +
-                    " mean age = " + meanAge/population.size());
+            if (debugMode) {
+                System.out.println("population = " + population.size() +
+                        " matches = " + matches +
+                        " deaths = " + deaths +
+                        " births = " + births +
+                        " mean age = " + meanAge/population.size());
+                if (series != null) {
+                    series[0].add(i, population.size());
+                    series[1].add(i,deaths);
+                }
+            }
         }
 
         HashMap<ArrayList<City>, Integer> species = new HashMap<ArrayList<City>, Integer>();
