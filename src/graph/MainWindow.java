@@ -3,6 +3,7 @@ package graph;
 import algorithm.Algorithm;
 import algorithm.FirstVer;
 import algorithm.NonGenetic;
+import algorithm.SecondVer;
 import chart.MyChartWindow;
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
@@ -117,6 +118,7 @@ public class MainWindow extends JFrame {
 		algorithmList = new JComboBox<String>();
 		algorithmList.addItem("Simple Algorithm");
 		algorithmList.addItem("Genetic Algorithm");
+        algorithmList.addItem("Mycek Algorithm");
 		panelUp.add(algorithmList);
 		btnFindPath.addActionListener(new ActionListener() {
 			@Override
@@ -203,13 +205,19 @@ public class MainWindow extends JFrame {
 
 	private LinkedList<MyVertex> findPath() {
         Algorithm al = null;
-        if (algorithmList.getSelectedIndex() == 0) al = new NonGenetic(g);
-		else {
-            al = new FirstVer(g,(Integer) starterSpinner.getValue(),
-                    (Integer)iterationsSpinner.getValue(), (Integer)minSpinner.getValue(), (Integer)maxSpinner.getValue(),
-                    series);
-            if (debugMode.isSelected()) ((FirstVer)al).setDebugModeOn();
-            else ((FirstVer)al).setDebugModeOff();
+        switch (algorithmList.getSelectedIndex()) {
+            case 0:
+                al = new NonGenetic(g);
+                break;
+            case 1:
+                al = new FirstVer(g, (Integer) starterSpinner.getValue(), (Integer) iterationsSpinner.getValue(),
+                        (Integer) minSpinner.getValue(), (Integer) maxSpinner.getValue(), series);
+                if (debugMode.isSelected()) ((FirstVer) al).setDebugModeOn();
+                else ((FirstVer) al).setDebugModeOff();
+                break;
+            case 2:
+                al = new SecondVer(g, (Integer) starterSpinner.getValue(), (Integer) iterationsSpinner.getValue());
+                break;
         }
 
 		return al.getCycle();
