@@ -210,6 +210,9 @@ public class MainWindow extends JFrame {
                 al = new NonGenetic(g);
                 break;
             case 1:
+                // clearing chart for new result
+                series[0].clear();
+                series[1].clear();
                 al = new FirstVer(g, (Integer) starterSpinner.getValue(), (Integer) iterationsSpinner.getValue(),
                         (Integer) minSpinner.getValue(), (Integer) maxSpinner.getValue(), series);
                 if (debugMode.isSelected()) ((FirstVer) al).setDebugModeOn();
@@ -308,9 +311,6 @@ public class MainWindow extends JFrame {
 
 		JPanel panel = new JPanel();
 		contentPane.add(panel, BorderLayout.EAST);
-
-
-
 	}
 
 	private void printGraphToSysOut() {
