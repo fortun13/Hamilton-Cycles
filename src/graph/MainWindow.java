@@ -210,7 +210,6 @@ public class MainWindow extends JFrame {
                 al = new NonGenetic(g);
                 break;
             case 1:
-                // clearing chart for new result
                 series[0].clear();
                 series[1].clear();
                 al = new FirstVer(g, (Integer) starterSpinner.getValue(), (Integer) iterationsSpinner.getValue(),
