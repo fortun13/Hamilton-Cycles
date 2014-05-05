@@ -1,6 +1,7 @@
-package graph;
+package algorithm;
 
 import edu.uci.ics.jung.graph.SparseMultigraph;
+import graph.GraphElements;
 
 import java.util.LinkedList;
 import java.util.Random;

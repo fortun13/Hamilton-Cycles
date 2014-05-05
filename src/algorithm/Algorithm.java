@@ -1,4 +1,6 @@
-package graph;
+package algorithm;
+
+import graph.GraphElements;
 
 import java.util.LinkedList;
 

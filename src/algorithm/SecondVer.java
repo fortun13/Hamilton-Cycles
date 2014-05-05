@@ -1,49 +1,35 @@
-package graph;
+package algorithm;
 
+import com.sun.istack.internal.NotNull;
 import edu.uci.ics.jung.graph.SparseMultigraph;
+import graph.GraphElements;
 
 import java.util.*;
 
 /**
- * Implementation of genetic algorithm based on ny view on the matter
+ * Implementation of genetic algorithm based on Myceks' view on the matter
  * Created by Marek on 2014-04-18.
  */
-public class FirstVer implements Algorithm {
+public class SecondVer implements Algorithm {
     private SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge> g;
     Collection<GraphElements.MyVertex> vertices;
     private final Random randomize = new Random();
 
     private int starterPopulation;
     private int numberOfIterations;
-    private int minimalPopulation;
-    private int maximumPopulation;
-
-    private static boolean debugMode = true;
-
-    /**
-     * Constructor witch is used only tu set necessary parameters
-     * @param g graph of connections between "cities"
-     */
-    public FirstVer(SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge> g) {
-        this(g,10,1000,2,200);
-    }
 
     /**
      *
      * @param g graph of connections between "cities"
-     * @param starterPopulation number of specimen in population by which algorithm will start
+     * @param populationSize number of population size
      * @param numberOfIterations number of iterations of algorithm
-     * @param minimalPopulation minimal number of specimen in population in one generation
-     * @param maximumPopulation maximal number of specimen in population in one generation
      */
-    public FirstVer(SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge> g,
-                    int starterPopulation, int numberOfIterations, int minimalPopulation, int maximumPopulation) {
+    public SecondVer(SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge> g,
+                     int populationSize, int numberOfIterations) {
         this.g = g;
         vertices = g.getVertices();
-        this.starterPopulation = starterPopulation;
+        this.starterPopulation = populationSize;
         this.numberOfIterations = numberOfIterations;
-        this.minimalPopulation = minimalPopulation;
-        this.maximumPopulation = maximumPopulation;
     }
 
     /**
@@ -52,116 +38,45 @@ public class FirstVer implements Algorithm {
      */
     @Override
     public LinkedList<GraphElements.MyVertex> getCycle() {
-        HashSet<Unit> population = new HashSet<Unit>();
+
+        ArrayList<Unit> population = new ArrayList<Unit>();
 
         for (int i = 0; i < starterPopulation; i++) population.add(new Unit());
 
-        for (int i = 0; i < numberOfIterations; i++) {
-            int matches = 0, deaths = 0, births = 0; //debug variables
-            for (Unit unit : population) {
-                if (unit.longestPath.size() == g.getVertexCount() + 1) {
+        int iteration = 0;
+        while (true){
+            ++iteration;
 
-                    HashMap<ArrayList<City>, Integer> species = new HashMap<ArrayList<City>, Integer>();
-                    for (Unit u : population) {
-                        Integer a = species.get(u.genome);
-                        species.put(u.genome, a == null ? 1 : a + 1);
-                    }
-//        spices output
-                    for (Map.Entry<ArrayList<City>, Integer> entry : species.entrySet()) {
-                        System.out.println("entry = " + entry);
-                    }
+            // Deaths
+            Collections.sort(population);
+            if (population.get(0).longestPath.size() == g.getVertexCount() + 1       // Ideal unit found
+                    || iteration == numberOfIterations)                         // Iteration limit reached
+                break;
+            for (int j = starterPopulation - 1; j >= starterPopulation/2; j--) population.remove(j);
 
-                    return unit.longestVertexList(); // I'm perfect
+            // Matching
+            for (Unit unit : population) unit.match(population.get(randomize.nextInt(starterPopulation / 2)));
+
+            Unit baby;
+            // Births
+            for (int j = 0; j < starterPopulation / 2; j++) {
+                if ((baby = population.get(j).deliver())==null){
+                    continue;
                 }
-
-                for (Unit partner : population) {
-                    if (unit == partner) continue;  //don't try to inject into itself
-                    if (unit.match(partner)) {
-                        if (debugMode) ++matches;
-                        break; //inject my genome if I likes him
-                    }
-                }
+                population.add(baby);
             }
-
-            HashSet<Unit> reducedPopulation = new HashSet<Unit>(population);
-
-            for (Unit unit : population) {
-                // Warn: population size could change in earlier loop, so calculation must occur on each loop,
-                // or modify it accordingly
-                double environmentUtilisation = (double)(reducedPopulation.size() - minimalPopulation)/maximumPopulation;
-                double str = (0.95 + randomize.nextDouble()/10)* unit.strength(), //strength with 10% random variation
-                        //required strength varied with environment utilisation
-                        objective = (environmentUtilisationCurve(environmentUtilisation)*vertices.size());
-//                System.out.println("unit.strength = " + unit.strength() +
-//                        " EUC = " + environmentUtilisationCurve(environmentUtilisation) +
-//                        " str = " + str +
-//                        " obj = " + objective);
-                if (str < objective)
-                //required strength varied with environment utilisation
-                {
-                    if (debugMode) ++deaths;
-                    reducedPopulation.remove(unit);
-                }
-            }
-            population = reducedPopulation;
-
-            HashSet<Unit> extendedPopulation = new HashSet<Unit>();
-            for (Unit unit : population) {
-                Unit baby = unit.deliver();
-                if (baby != null) {
-                    if (debugMode) ++births;
-                    extendedPopulation.add(baby);
-                }
-            }
-            population.addAll(extendedPopulation);
-
-            int meanAge = 0;
-            for (Unit unit : population) {
-                meanAge += unit.age;
-            }
-
-            // debug output
-            if (debugMode) System.out.println("population = " + population.size() +
-                    " matches = " + matches +
-                    " deaths = " + deaths +
-                    " births = " + births +
-                    " mean age = " + meanAge/population.size());
         }
-
-        HashMap<ArrayList<City>, Integer> species = new HashMap<ArrayList<City>, Integer>();
-        for (Unit u : population) {
-            Integer a = species.get(u.genome);
-            species.put(u.genome, a == null ? 1 : a + 1);
-        }
-//        spices output
-        for (Map.Entry<ArrayList<City>, Integer> entry : species.entrySet()) {
-            System.out.println("entry = " + entry);
-        }
-
-        LinkedList<GraphElements.MyVertex> longest = new LinkedList<GraphElements.MyVertex>();
-        for (Unit unit : population) {
-            if (unit.longestPath.size() > longest.size()) longest = unit.longestVertexList();
-        }
-        return longest;
-    }
-
-    /**
-     * function witch modifies one distribution of environmentUtilisation to another
-     * @param environmentUtilisation percentage utilisation of environment
-     * @return productivity of environment
-     */
-    private double environmentUtilisationCurve(double environmentUtilisation) {
-        return ((Math.atan(10 * environmentUtilisation - 5) * 1.2) - 0.1);
+        System.out.println("iteration = " + iteration);
+        return population.get(0).longestVertexList();
     }
 
     /**
      * Class witch represents an unit of population
      */
-    private class Unit {
+    private class Unit implements Comparable {
         public final LinkedList<City> longestPath;
         private final ArrayList<City> genome;
         private ArrayList<City> newGenome = null;
-        private int age;
 
         /**
          * Constructor used to create preset unit
@@ -177,7 +92,6 @@ public class FirstVer implements Algorithm {
          */
         Unit() {
             genome = new ArrayList<City>(g.getVertexCount());
-
 
             //Creating vertexes
             for (GraphElements.MyVertex vertex : vertices) {
@@ -250,20 +164,9 @@ public class FirstVer implements Algorithm {
          * The more similar units are, the more probability of liking is.
          * Of course, there is lots of absolute hazard
          * @param partner another unit object
-         * @return result of mating
          */
-        public boolean match(Unit partner) {
-            HashSet<City> tmp = new HashSet<City>(partner.longestPath),
-                    meDiffPartner = new HashSet<City>(longestPath),
-                    union = new HashSet<City>(longestPath);
-            meDiffPartner.removeAll(tmp);
-            union.addAll(tmp);
-
-            if (union.size() == 0) return false; // no neighbours
-
-            // strength of like is seen as intersection/union of genomes
-            return randomize.nextInt(100) <
-                            (100*(longestPath.size() - meDiffPartner.size())) / union.size() && partner.inject(genome);
+        public void match(Unit partner) {
+            inject(partner.genome);
         }
 
         /**
@@ -280,24 +183,6 @@ public class FirstVer implements Algorithm {
         }
 
         /**
-         * Shows how strength unit is
-         * @return numerical representation of units strength
-         */
-        public double strength() {
-            return longestPath.size()*survivorCurve(++age);
-        }
-
-        /**
-         * Modifies linear distribution of age to some other distribution closer to real experience
-         * @param age age of unit
-         * @return probability of unit demise
-         */
-        private double survivorCurve(double age) {
-            double y = (age - 50)*4/50, x = age + 2;
-            return (1 - Math.atan(y)/2)*(2 + (-Math.pow(2,(1/x))));
-        }
-
-        /**
          * Mixes up genomes end spawn new unit
          * @return result of merging two units
          */
@@ -311,7 +196,7 @@ public class FirstVer implements Algorithm {
             babyGenome.addAll(newGenome.subList(crossingPoint, newGenome.size()));
 
             // mutation
-            final double mutationLevel = 0.01;
+            final double mutationLevel = 0.1;
             for (int i = 0; i < babyGenome.size(); i++) {
                 if (mutationLevel < randomize.nextDouble()) continue;
 
@@ -333,6 +218,15 @@ public class FirstVer implements Algorithm {
             for (City city : longestPath) result.add(city.location);
 
             return result;
+        }
+
+        @Override
+        public int compareTo(@NotNull Object o) {
+            Unit unit = (Unit) o;
+
+            if (unit == null) return 0;
+            
+            return unit.longestPath.size() - longestPath.size();
         }
     }
 
@@ -385,11 +279,4 @@ public class FirstVer implements Algorithm {
         }
     }
 
-    public void setDebugModeOn() {
-        debugMode = true;
-    }
-
-    public void setDebugModeOff() {
-        debugMode = false;
-    }
 }
