@@ -3,6 +3,7 @@ package algorithm;
 import com.sun.istack.internal.NotNull;
 import edu.uci.ics.jung.graph.SparseMultigraph;
 import graph.GraphElements;
+import org.jfree.data.xy.XYSeries;
 
 import java.util.*;
 
@@ -18,6 +19,7 @@ public class SecondVer implements Algorithm {
     private int starterPopulation;
     private int numberOfIterations;
 
+    private XYSeries[] series;
     /**
      *
      * @param g graph of connections between "cities"
@@ -25,11 +27,12 @@ public class SecondVer implements Algorithm {
      * @param numberOfIterations number of iterations of algorithm
      */
     public SecondVer(SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge> g,
-                     int populationSize, int numberOfIterations) {
+                     int populationSize, int numberOfIterations, XYSeries[] series) {
         this.g = g;
         vertices = g.getVertices();
         this.starterPopulation = populationSize;
         this.numberOfIterations = numberOfIterations;
+        this.series = series;
     }
 
     /**
@@ -44,11 +47,28 @@ public class SecondVer implements Algorithm {
         for (int i = 0; i < starterPopulation; i++) population.add(new Unit());
 
         int iteration = 0;
+        int bestAdaptation = 1;
+        int worstAdaptation = 1;
         while (true){
             ++iteration;
 
             // Deaths
+            int counter = population.size() - 2;
             Collections.sort(population);
+
+            while (population.get(0).longestPath.size() == population.get(bestAdaptation).longestPath.size()) {
+                bestAdaptation++;
+                if (bestAdaptation == population.size()) break;
+            }
+            while (population.get(population.size()-1).longestPath.size() == population.get(counter).longestPath.size()) {
+                counter--;
+                worstAdaptation++;
+                if (counter == -1) break;
+            }
+
+            System.out.println("PopulationSize: " + population.size() + " BestAdaptation: " + bestAdaptation + " WorstAdaptation: " + worstAdaptation);
+            series[0].add(iteration,bestAdaptation);
+            series[1].add(iteration,worstAdaptation);
             if (population.get(0).longestPath.size() == g.getVertexCount() + 1       // Ideal unit found
                     || iteration == numberOfIterations)                         // Iteration limit reached
                 break;
@@ -65,6 +85,8 @@ public class SecondVer implements Algorithm {
                 }
                 population.add(baby);
             }
+            bestAdaptation = 1;
+            worstAdaptation = 1;
         }
         System.out.println("iteration = " + iteration);
         return population.get(0).longestVertexList();

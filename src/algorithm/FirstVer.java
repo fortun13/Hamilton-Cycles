@@ -11,6 +11,7 @@ import java.util.*;
  * Created by Marek on 2014-04-18.
  */
 public class FirstVer implements Algorithm {
+
     private SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge> g;
     Collection<GraphElements.MyVertex> vertices;
     private final Random randomize = new Random();

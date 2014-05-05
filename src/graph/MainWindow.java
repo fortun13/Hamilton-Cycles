@@ -100,7 +100,7 @@ public class MainWindow extends JFrame {
 
 		vertexSpinner = new JSpinner();
 		panelUp.add(vertexSpinner);
-		vertexSpinner.setValue(4);
+		vertexSpinner.setValue(10);
 
 		JButton btnShowGraph = new JButton("GraphToSystemOut");
 		panelUp.add(btnShowGraph);
@@ -119,6 +119,7 @@ public class MainWindow extends JFrame {
 		algorithmList.addItem("Simple Algorithm");
 		algorithmList.addItem("Genetic Algorithm");
         algorithmList.addItem("Mycek Algorithm");
+        algorithmList.setSelectedIndex(2);
 		panelUp.add(algorithmList);
 		btnFindPath.addActionListener(new ActionListener() {
 			@Override
@@ -183,8 +184,8 @@ public class MainWindow extends JFrame {
 		graphPanel = new JPanel();
 		contentPane.add(graphPanel, BorderLayout.CENTER);
 
-        series[0] = new XYSeries("Population Size Series");
-        series[1] = new XYSeries("Deaths");
+        series[0] = new XYSeries("Best Adaptation");
+        series[1] = new XYSeries("Worst Adaptation");
    /*     final XYSeriesCollection dataset = new XYSeriesCollection(this.series);
         MyChartWindow chartPanel = new MyChartWindow(dataset);
         contentPane.add(chartPanel, BorderLayout.SOUTH);*/
@@ -218,7 +219,7 @@ public class MainWindow extends JFrame {
                 else ((FirstVer) al).setDebugModeOff();
                 break;
             case 2:
-                al = new SecondVer(g, (Integer) starterSpinner.getValue(), (Integer) iterationsSpinner.getValue());
+                al = new SecondVer(g, (Integer) starterSpinner.getValue(), (Integer) iterationsSpinner.getValue(), series);
                 break;
         }
 

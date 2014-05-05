@@ -19,7 +19,8 @@ import java.awt.*;
 public class MyChartWindow extends JFrame {
 
     public MyChartWindow(XYSeriesCollection[] series) {
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    //    setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         setBounds(100, 100, 600, 600);
 
         setTitle("Chart");
@@ -62,7 +63,8 @@ public class MyChartWindow extends JFrame {
         ValueAxis axis = plot.getDomainAxis();
         axis.setAutoRange(true);
         axis = plot.getRangeAxis();
-        axis.setRange(0,300);
+ //       axis.setAutoRange(true);
+ //       axis.setRange(0,300);
         return result;
     }
 }
