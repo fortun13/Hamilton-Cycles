@@ -13,13 +13,37 @@ public class FirstVer implements Algorithm {
     Collection<GraphElements.MyVertex> vertices;
     private final Random randomize = new Random();
 
+    private int starterPopulation;
+    private int numberOfIterations;
+    private int minimalPopulation;
+    private int maximumPopulation;
+
+    private static boolean debugMode = true;
+
     /**
      * Constructor witch is used only tu set necessary parameters
      * @param g graph of connections between "cities"
      */
     public FirstVer(SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge> g) {
+        this(g,10,1000,2,200);
+    }
+
+    /**
+     *
+     * @param g graph of connections between "cities"
+     * @param starterPopulation number of specimen in population by which algorithm will start
+     * @param numberOfIterations number of iterations of algorithm
+     * @param minimalPopulation minimal number of specimen in population in one generation
+     * @param maximumPopulation maximal number of specimen in population in one generation
+     */
+    public FirstVer(SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge> g,
+                    int starterPopulation, int numberOfIterations, int minimalPopulation, int maximumPopulation) {
         this.g = g;
         vertices = g.getVertices();
+        this.starterPopulation = starterPopulation;
+        this.numberOfIterations = numberOfIterations;
+        this.minimalPopulation = minimalPopulation;
+        this.maximumPopulation = maximumPopulation;
     }
 
     /**
@@ -29,22 +53,20 @@ public class FirstVer implements Algorithm {
     @Override
     public LinkedList<GraphElements.MyVertex> getCycle() {
         HashSet<Unit> population = new HashSet<Unit>();
-        final int min = 2, max = 200;
 
-        for (int i = 0; i < 10; i++) population.add(new Unit());
+        for (int i = 0; i < starterPopulation; i++) population.add(new Unit());
 
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < numberOfIterations; i++) {
             int matches = 0, deaths = 0, births = 0; //debug variables
             for (Unit unit : population) {
                 if (unit.longestPath.size() == g.getVertexCount() + 1) {
 
-                    LinkedHashMap<ArrayList<City>, Integer> species = new LinkedHashMap<ArrayList<City>, Integer>();
+                    HashMap<ArrayList<City>, Integer> species = new HashMap<ArrayList<City>, Integer>();
                     for (Unit u : population) {
                         Integer a = species.get(u.genome);
                         species.put(u.genome, a == null ? 1 : a + 1);
                     }
 //        spices output
-
                     for (Map.Entry<ArrayList<City>, Integer> entry : species.entrySet()) {
                         System.out.println("entry = " + entry);
                     }
@@ -55,7 +77,7 @@ public class FirstVer implements Algorithm {
                 for (Unit partner : population) {
                     if (unit == partner) continue;  //don't try to inject into itself
                     if (unit.match(partner)) {
-                        ++matches;
+                        if (debugMode) ++matches;
                         break; //inject my genome if I likes him
                     }
                 }
@@ -66,7 +88,7 @@ public class FirstVer implements Algorithm {
             for (Unit unit : population) {
                 // Warn: population size could change in earlier loop, so calculation must occur on each loop,
                 // or modify it accordingly
-                double environmentUtilisation = (double)(reducedPopulation.size() - min)/max;
+                double environmentUtilisation = (double)(reducedPopulation.size() - minimalPopulation)/maximumPopulation;
                 double str = (0.95 + randomize.nextDouble()/10)* unit.strength(), //strength with 10% random variation
                         //required strength varied with environment utilisation
                         objective = (environmentUtilisationCurve(environmentUtilisation)*vertices.size());
@@ -77,7 +99,7 @@ public class FirstVer implements Algorithm {
                 if (str < objective)
                 //required strength varied with environment utilisation
                 {
-                    ++deaths;
+                    if (debugMode) ++deaths;
                     reducedPopulation.remove(unit);
                 }
             }
@@ -87,7 +109,7 @@ public class FirstVer implements Algorithm {
             for (Unit unit : population) {
                 Unit baby = unit.deliver();
                 if (baby != null) {
-                    ++births;
+                    if (debugMode) ++births;
                     extendedPopulation.add(baby);
                 }
             }
@@ -99,7 +121,7 @@ public class FirstVer implements Algorithm {
             }
 
             // debug output
-            System.out.println(i + ": population = " + population.size() +
+            if (debugMode) System.out.println("population = " + population.size() +
                     " matches = " + matches +
                     " deaths = " + deaths +
                     " births = " + births +
@@ -136,7 +158,7 @@ public class FirstVer implements Algorithm {
      * Class witch represents an unit of population
      */
     private class Unit {
-        public final HashSet<City> longestPath;
+        public final LinkedList<City> longestPath;
         private final ArrayList<City> genome;
         private ArrayList<City> newGenome = null;
         private int age;
@@ -169,7 +191,7 @@ public class FirstVer implements Algorithm {
          * Method used by constructors to find out longest path in graph witch is strongest trait of unit
          * @return longest path in analysed graph
          */
-        private HashSet<City> calculateMaxTrace() {
+        private LinkedList<City> calculateMaxTrace() {
             HashMap<City, LinkedList<City>> traces = new HashMap<City, LinkedList<City>>(genome.size());
 
             //Each city is end point of one path:
@@ -206,7 +228,7 @@ public class FirstVer implements Algorithm {
                 } while (true);
                 if (nextTrace != null && nextTrace.size() > longestTrace.size()) longestTrace = nextTrace;
             }
-            return new HashSet<City>(longestTrace);
+            return longestTrace;
         }
 
         /**
@@ -231,25 +253,17 @@ public class FirstVer implements Algorithm {
          * @return result of mating
          */
         public boolean match(Unit partner) {
-            int sum, intersection;
-            sum = intersection = longestPath.size();
+            HashSet<City> tmp = new HashSet<City>(partner.longestPath),
+                    meDiffPartner = new HashSet<City>(longestPath),
+                    union = new HashSet<City>(longestPath);
+            meDiffPartner.removeAll(tmp);
+            union.addAll(tmp);
 
-            for (City city : partner.longestPath) {
-                if (longestPath.contains(city)) {
-                    --intersection;
-                } else {
-                    ++sum;
-                }
-            }
+            if (union.size() == 0) return false; // no neighbours
 
-            return randomize.nextInt(100) < (sum != 0 ? 100 * (longestPath.size() - intersection + 1) / sum : 0)
-                    && partner.inject(genome);
-//
-//            if (union.size() == 0) return false; // no neighbours
-//
-//            // strength of like is seen as intersection/union of genomes
-//            return randomize.nextInt(100) <
-//                            (100*(longestPath.size() - meDiffPartner.size())) / union.size() && partner.inject(genome);
+            // strength of like is seen as intersection/union of genomes
+            return randomize.nextInt(100) <
+                            (100*(longestPath.size() - meDiffPartner.size())) / union.size() && partner.inject(genome);
         }
 
         /**
@@ -369,5 +383,13 @@ public class FirstVer implements Algorithm {
         public String toString() {
             return location.getName() + "->" + nextLocation.getName();
         }
+    }
+
+    public void setDebugModeOn() {
+        debugMode = true;
+    }
+
+    public void setDebugModeOff() {
+        debugMode = false;
     }
 }
