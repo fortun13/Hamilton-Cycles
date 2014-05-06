@@ -38,6 +38,12 @@ public class MainWindow extends JFrame {
     private JSpinner maxSpinner;
     private JSpinner iterationsSpinner;
     private JSpinner starterSpinner;
+
+    // Labels for a few spinners
+    private JLabel lblNumberOfIterations;
+    private JLabel lblMinNumber;
+    private JLabel lblMaxNumberOf;
+    private JLabel lblStarterPopulation;
     
     private JCheckBox debugMode;
     
@@ -98,9 +104,10 @@ public class MainWindow extends JFrame {
 		JLabel lblVertex = new JLabel("Vertex");
 		panelUp.add(lblVertex);
 
-		vertexSpinner = new JSpinner();
+        SpinnerNumberModel vertexModel = new SpinnerNumberModel(10, 0, 50, 1);
+        vertexSpinner = new JSpinner(vertexModel);
 		panelUp.add(vertexSpinner);
-		vertexSpinner.setValue(10);
+		//vertexSpinner.setValue(10);
 
 		JButton btnShowGraph = new JButton("GraphToSystemOut");
 		panelUp.add(btnShowGraph);
@@ -119,8 +126,46 @@ public class MainWindow extends JFrame {
 		algorithmList.addItem("Simple Algorithm");
 		algorithmList.addItem("Genetic Algorithm");
         algorithmList.addItem("Mycek Algorithm");
-        algorithmList.setSelectedIndex(2);
-		panelUp.add(algorithmList);
+        algorithmList.setSelectedIndex(1);
+        algorithmList.addActionListener(
+                new ActionListener(){
+                    public void actionPerformed(ActionEvent e){
+                        switch (algorithmList.getSelectedIndex()) {
+                            case 0:
+                                lblNumberOfIterations.setVisible(false);
+                                lblMinNumber.setVisible(false);
+                                lblMaxNumberOf.setVisible(false);
+                                lblStarterPopulation.setVisible(false);
+                                starterSpinner.setVisible(false);
+                                iterationsSpinner.setVisible(false);
+                                minSpinner.setVisible(false);
+                                maxSpinner.setVisible(false);
+                                break;
+                            case 1:
+                                lblNumberOfIterations.setVisible(true);
+                                lblMinNumber.setVisible(true);
+                                lblMaxNumberOf.setVisible(true);
+                                lblStarterPopulation.setVisible(true);
+                                starterSpinner.setVisible(true);
+                                iterationsSpinner.setVisible(true);
+                                minSpinner.setVisible(true);
+                                maxSpinner.setVisible(true);
+                                break;
+                            case 2:
+                                lblNumberOfIterations.setVisible(true);
+                                lblMinNumber.setVisible(false);
+                                lblMaxNumberOf.setVisible(false);
+                                lblStarterPopulation.setVisible(true);
+                                starterSpinner.setVisible(true);
+                                iterationsSpinner.setVisible(true);
+                                minSpinner.setVisible(false);
+                                maxSpinner.setVisible(false);
+                                break;
+                        }
+                    }
+                }
+        );
+        panelUp.add(algorithmList);
 		btnFindPath.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -153,32 +198,40 @@ public class MainWindow extends JFrame {
 		JPanel panelDown = new JPanel();
 		panel.add(panelDown, BorderLayout.SOUTH);
 
-		JLabel lblNumberOfIterations = new JLabel("Number of Iterations");
+		lblNumberOfIterations = new JLabel("Number of Iterations");
 		panelDown.add(lblNumberOfIterations);
 
-		iterationsSpinner = new JSpinner();
-		iterationsSpinner.setValue(1000);
+        SpinnerNumberModel iterationsModel = new SpinnerNumberModel(1000, 100, 5000, 1);
+		iterationsSpinner = new JSpinner(iterationsModel);
+        iterationsSpinner.setPreferredSize(new Dimension(60, 20));
+		//iterationsSpinner.setValue(1000);
 		panelDown.add(iterationsSpinner);
 		
-		JLabel lblMinNumber = new JLabel("min. number of specimen");
+		lblMinNumber = new JLabel("min. number of specimen");
 		panelDown.add(lblMinNumber);
-		
-		minSpinner = new JSpinner();
-		minSpinner.setValue(2);
+
+        SpinnerNumberModel minPopModel = new SpinnerNumberModel(2, 0, 100, 1);
+		minSpinner = new JSpinner(minPopModel);
+        minSpinner.setPreferredSize(new Dimension(50, 20));
+		//minSpinner.setValue(2);
 		panelDown.add(minSpinner);
 		
-		JLabel lblMaxNumberOf = new JLabel("max. number of specimen");
+		lblMaxNumberOf = new JLabel("max. number of specimen");
 		panelDown.add(lblMaxNumberOf);
-		
-		maxSpinner = new JSpinner();
-		maxSpinner.setValue(200);
+
+        SpinnerNumberModel maxPopModel = new SpinnerNumberModel(200, 100, 1000, 1);
+		maxSpinner = new JSpinner(maxPopModel);
+        maxSpinner.setPreferredSize(new Dimension(60, 20));
+		//maxSpinner.setValue(200);
 		panelDown.add(maxSpinner);
 		
-		JLabel lblStarterPopulation = new JLabel("starter population");
+	    lblStarterPopulation = new JLabel("starter population");
 		panelDown.add(lblStarterPopulation);
-		
-		starterSpinner = new JSpinner();
-		starterSpinner.setValue(10);
+
+        SpinnerNumberModel startPopModel = new SpinnerNumberModel(10, 0, 1000, 1);
+		starterSpinner = new JSpinner(startPopModel);
+        starterSpinner.setPreferredSize(new Dimension(60, 20));
+		//starterSpinner.setValue(10);
 		panelDown.add(starterSpinner);
 
 		graphPanel = new JPanel();
