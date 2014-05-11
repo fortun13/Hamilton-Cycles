@@ -55,20 +55,28 @@ public class SecondVer implements Algorithm {
             // Deaths
             int counter = population.size() - 2;
             Collections.sort(population);
+            if (population.get(0).longestPath.size() != population.get(population.size()-1).longestPath.size()) {
+                 while (population.get(0).longestPath.size() == population.get(bestAdaptation).longestPath.size()) {
+                     bestAdaptation++;
+                     if (bestAdaptation == population.size()) break;
+                 }
 
-            while (population.get(0).longestPath.size() == population.get(bestAdaptation).longestPath.size()) {
-                bestAdaptation++;
-                if (bestAdaptation == population.size()) break;
+                while (population.get(population.size() - 1).longestPath.size() == population.get(counter).longestPath.size()) {
+                    counter--;
+                    worstAdaptation++;
+                    if (counter == -1) break;
+                }
             }
-            while (population.get(population.size()-1).longestPath.size() == population.get(counter).longestPath.size()) {
-                counter--;
-                worstAdaptation++;
-                if (counter == -1) break;
+            else {
+                bestAdaptation = 0;
+                worstAdaptation = 0;
             }
 
             System.out.println("PopulationSize: " + population.size() + " BestAdaptation: " + bestAdaptation + " WorstAdaptation: " + worstAdaptation);
             series[0].add(iteration,bestAdaptation);
             series[1].add(iteration,worstAdaptation);
+            series[2].add(iteration, ((double) population.get(0).longestPath.size()-1)/g.getVertexCount());
+            series[3].add(iteration, ((double) population.get(population.size() - 1).longestPath.size() - 1)/g.getVertexCount());
             if (population.get(0).longestPath.size() == g.getVertexCount() + 1       // Ideal unit found
                     || iteration == numberOfIterations)                         // Iteration limit reached
                 break;

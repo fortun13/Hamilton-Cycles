@@ -60,7 +60,7 @@ public class MainWindow extends JFrame {
 
 	private JPanel graphPanel;
 
-    private XYSeries[] series = new XYSeries[2];
+    private XYSeries[] series = new XYSeries[4];
 
 	/**
 	 * Launch the application.
@@ -126,7 +126,7 @@ public class MainWindow extends JFrame {
 		algorithmList.addItem("Simple Algorithm");
 		algorithmList.addItem("Genetic Algorithm");
         algorithmList.addItem("Mycek Algorithm");
-        algorithmList.setSelectedIndex(1);
+        algorithmList.setSelectedIndex(2);
         algorithmList.addActionListener(
                 new ActionListener(){
                     public void actionPerformed(ActionEvent e){
@@ -239,13 +239,17 @@ public class MainWindow extends JFrame {
 
         series[0] = new XYSeries("Best Adaptation");
         series[1] = new XYSeries("Worst Adaptation");
+        series[2] = new XYSeries("Best/Expected");
+        series[3] = new XYSeries("Worst/Expected");
    /*     final XYSeriesCollection dataset = new XYSeriesCollection(this.series);
         MyChartWindow chartPanel = new MyChartWindow(dataset);
         contentPane.add(chartPanel, BorderLayout.SOUTH);*/
 
-        final XYSeriesCollection[] dataset = new XYSeriesCollection[2];
+        final XYSeriesCollection[] dataset = new XYSeriesCollection[4];
         dataset[0] = new XYSeriesCollection(series[0]);
         dataset[1] = new XYSeriesCollection(series[1]);
+        dataset[2] = new XYSeriesCollection(series[2]);
+        dataset[3] = new XYSeriesCollection(series[3]);
         new Thread() {
             @Override
             public void run() {
@@ -272,6 +276,10 @@ public class MainWindow extends JFrame {
                 else ((FirstVer) al).setDebugModeOff();
                 break;
             case 2:
+                series[0].clear();
+                series[1].clear();
+                series[2].clear();
+                series[3].clear();
                 al = new SecondVer(g, (Integer) starterSpinner.getValue(), (Integer) iterationsSpinner.getValue(), series);
                 break;
         }
