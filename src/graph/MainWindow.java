@@ -1,9 +1,6 @@
 package graph;
 
-import algorithm.Algorithm;
-import algorithm.FirstVer;
-import algorithm.NonGenetic;
-import algorithm.SecondVer;
+import algorithm.*;
 import chart.MyChartWindow;
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
@@ -61,6 +58,8 @@ public class MainWindow extends JFrame {
 	private JPanel graphPanel;
 
     private XYSeries[] series = new XYSeries[4];
+
+    private AlgorithmThread thread = null;
 
 	/**
 	 * Launch the application.
@@ -169,7 +168,7 @@ public class MainWindow extends JFrame {
 		btnFindPath.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				for (MyEdge myEdge : g.getEdges()) myEdge.setNotAsPartOfCycle();
+		/*		for (MyEdge myEdge : g.getEdges()) myEdge.setNotAsPartOfCycle();
 				LinkedList<MyVertex> path = findPath();
 				if (!(path == null)) {
 					for (int i = 0; i < path.size() - 1; i++) {
@@ -178,9 +177,22 @@ public class MainWindow extends JFrame {
 					}
 					//                    MyEdge edge = g.findEdge(path.get(path.size() - 1), path.get(0));
 					//                    edge.setAsPartOfCycle();
-					contentPane.repaint();
+					//contentPane.repaint();
+                    graphPanel.repaint();
 				}
-				System.out.println(path);
+				System.out.println(path);*/
+         /*       synchronized (this) {
+                    if (thread == null) {
+                        thread = new AlgorithmThread(g, graphPanel, getAlgorithm(), this);
+                        thread.run();
+                    } else {
+                        thread.setGraph(g);
+                        thread.setAlgorithm(getAlgorithm());
+                        thread.setGraphPanel(graphPanel);
+                    }
+                    thread.notify();
+                }*/
+                findPath();
 			}
 		});
 		btnShowGraph.addActionListener(new ActionListener() {
@@ -261,7 +273,21 @@ public class MainWindow extends JFrame {
 		this.setVisible(true);
 	}
 
-	private LinkedList<MyVertex> findPath() {
+    private void findPath() {
+        synchronized (this) {
+            if (thread == null) {
+                thread = new AlgorithmThread(g, graphPanel, getAlgorithm(), this);
+                thread.run();
+            } else {
+                thread.setGraph(g);
+                thread.setAlgorithm(getAlgorithm());
+                thread.setGraphPanel(graphPanel);
+            }
+            thread.notify();
+        }
+    }
+
+	/*private LinkedList<MyVertex> findPath() {
         Algorithm al = null;
         switch (algorithmList.getSelectedIndex()) {
             case 0:
@@ -285,7 +311,32 @@ public class MainWindow extends JFrame {
         }
 
 		return al.getCycle();
-	}
+	}*/
+
+    private Algorithm getAlgorithm() {
+        Algorithm al = null;
+        switch (algorithmList.getSelectedIndex()) {
+            case 0:
+                al = new NonGenetic(g);
+                break;
+            case 1:
+                series[0].clear();
+                series[1].clear();
+                al = new FirstVer(g, (Integer) starterSpinner.getValue(), (Integer) iterationsSpinner.getValue(),
+                        (Integer) minSpinner.getValue(), (Integer) maxSpinner.getValue(), series);
+                if (debugMode.isSelected()) ((FirstVer) al).setDebugModeOn();
+                else ((FirstVer) al).setDebugModeOff();
+                break;
+            case 2:
+                series[0].clear();
+                series[1].clear();
+                series[2].clear();
+                series[3].clear();
+                al = new SecondVer(g, (Integer) starterSpinner.getValue(), (Integer) iterationsSpinner.getValue(), series);
+                break;
+        }
+        return al;
+    }
 
 	protected void generateGraph() {
 		MyEdgeFactory.resetFactory();
