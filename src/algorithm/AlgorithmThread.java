@@ -2,7 +2,6 @@ package algorithm;
 
 import edu.uci.ics.jung.graph.SparseMultigraph;
 import graph.GraphElements;
-import graph.MainWindow;
 
 import javax.swing.*;
 import java.util.LinkedList;
@@ -10,32 +9,37 @@ import java.util.LinkedList;
 /**
  * Created by Fortun on 2014-05-21.
  */
+
 public class AlgorithmThread extends Thread {
 
     private SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge> g;
     private JPanel graphPanel;
     private Algorithm al;
     private  LinkedList<GraphElements.MyVertex> path = new LinkedList<GraphElements.MyVertex>();
-    private MainWindow window;
 
-    public AlgorithmThread (SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge> g, JPanel panel, Algorithm al, MainWindow window) {
+    public boolean sleeping = false;
+
+    public AlgorithmThread (SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge> g, JPanel panel, Algorithm al) {
         this.g = g;
         graphPanel = panel;
         this.al = al;
-        this.window = window;
     }
 
     @Override
     public void run() {
         try {
             synchronized (this) {
-                wait();
+                sleeping = true;
+                while (true) {
+                    wait();
+                    path = al.getCycle();
+                    refreshPanel();
+                }
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        path = al.getCycle();
-        refreshPanel();
+
     }
 
     private void refreshPanel() {
