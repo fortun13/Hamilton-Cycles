@@ -28,14 +28,14 @@ public class AlgorithmThread extends Thread {
     @Override
     public void run() {
         try {
-            synchronized (window) {
+            synchronized (this) {
                 wait();
-                path = al.getCycle();
-                refreshPanel();
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        path = al.getCycle();
+        refreshPanel();
     }
 
     private void refreshPanel() {

@@ -274,15 +274,15 @@ public class MainWindow extends JFrame {
 	}
 
     private void findPath() {
-        synchronized (this) {
             if (thread == null) {
                 thread = new AlgorithmThread(g, graphPanel, getAlgorithm(), this);
-                thread.run();
+                thread.start();
             } else {
                 thread.setGraph(g);
                 thread.setAlgorithm(getAlgorithm());
                 thread.setGraphPanel(graphPanel);
             }
+        synchronized (thread) {
             thread.notify();
         }
     }
