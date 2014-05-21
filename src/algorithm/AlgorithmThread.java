@@ -8,6 +8,7 @@ import java.util.LinkedList;
 
 /**
  * Created by Fortun on 2014-05-21.
+ * Provides multi-threading
  */
 
 public class AlgorithmThread extends Thread {
@@ -17,7 +18,7 @@ public class AlgorithmThread extends Thread {
     private Algorithm al;
     private  LinkedList<GraphElements.MyVertex> path = new LinkedList<GraphElements.MyVertex>();
 
-    public boolean sleeping = false;
+    public boolean sleeping = true;
 
     public AlgorithmThread (SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge> g, JPanel panel, Algorithm al) {
         this.g = g;
@@ -25,13 +26,14 @@ public class AlgorithmThread extends Thread {
         this.al = al;
     }
 
+    @SuppressWarnings("InfiniteLoopStatement")
     @Override
     public void run() {
         try {
             synchronized (this) {
-                sleeping = true;
                 while (true) {
-                    wait();
+                    if (sleeping) wait();
+                    sleeping = true;
                     path = al.getCycle();
                     refreshPanel();
                 }
@@ -62,5 +64,10 @@ public class AlgorithmThread extends Thread {
 
     public void setAlgorithm(Algorithm al) {
         this.al = al;
+    }
+
+    public void wakeup() {
+        sleeping = false;
+        notify();
     }
 }

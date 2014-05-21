@@ -3,7 +3,6 @@ package graph;
 import algorithm.*;
 import chart.MyChartWindow;
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
-import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.EditingModalGraphMouse;
@@ -99,7 +98,8 @@ public class MainWindow extends JFrame {
 		JLabel lblVertex = new JLabel("Vertex");
 		panelUp.add(lblVertex);
 
-        vertexSpinner = new JSpinner(new SpinnerNumberModel(10, 0, 50, 1));
+        SpinnerNumberModel vertexModel = new SpinnerNumberModel(10, 0, 50, 1);
+        vertexSpinner = new JSpinner(vertexModel);
 		panelUp.add(vertexSpinner);
 		//vertexSpinner.setValue(10);
 
@@ -122,8 +122,8 @@ public class MainWindow extends JFrame {
         algorithmList.addItem("Mycek Algorithm");
         algorithmList.setSelectedIndex(2);
         algorithmList.addActionListener(
-                new ActionListener(){
-                    public void actionPerformed(ActionEvent e){
+                new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
                         switch (algorithmList.getSelectedIndex()) {
                             case 0:
                                 lblNumberOfIterations.setVisible(false);
@@ -208,7 +208,8 @@ public class MainWindow extends JFrame {
 		lblNumberOfIterations = new JLabel("Number of Iterations");
 		panelDown.add(lblNumberOfIterations);
 
-		iterationsSpinner = new JSpinner(new SpinnerNumberModel(1000, 100, 20000, 1));
+        SpinnerNumberModel iterationsModel = new SpinnerNumberModel(1000, 100, 5000, 1);
+		iterationsSpinner = new JSpinner(iterationsModel);
         iterationsSpinner.setPreferredSize(new Dimension(60, 20));
 		//iterationsSpinner.setValue(1000);
 		panelDown.add(iterationsSpinner);
@@ -216,7 +217,8 @@ public class MainWindow extends JFrame {
 		lblMinNumber = new JLabel("min. number of specimen");
 		panelDown.add(lblMinNumber);
 
-		minSpinner = new JSpinner(new SpinnerNumberModel(2, 0, 100, 1));
+        SpinnerNumberModel minPopModel = new SpinnerNumberModel(2, 0, 100, 1);
+		minSpinner = new JSpinner(minPopModel);
         minSpinner.setPreferredSize(new Dimension(50, 20));
 		//minSpinner.setValue(2);
 		panelDown.add(minSpinner);
@@ -224,7 +226,8 @@ public class MainWindow extends JFrame {
 		lblMaxNumberOf = new JLabel("max. number of specimen");
 		panelDown.add(lblMaxNumberOf);
 
-		maxSpinner = new JSpinner(new SpinnerNumberModel(200, 100, 1000, 1));
+        SpinnerNumberModel maxPopModel = new SpinnerNumberModel(200, 100, 1000, 1);
+		maxSpinner = new JSpinner(maxPopModel);
         maxSpinner.setPreferredSize(new Dimension(60, 20));
 		//maxSpinner.setValue(200);
 		panelDown.add(maxSpinner);
@@ -232,7 +235,8 @@ public class MainWindow extends JFrame {
 	    lblStarterPopulation = new JLabel("starter population");
 		panelDown.add(lblStarterPopulation);
 
-		starterSpinner = new JSpinner(new SpinnerNumberModel(10, 0, 1000, 1));
+        SpinnerNumberModel startPopModel = new SpinnerNumberModel(10, 0, 1000, 1);
+		starterSpinner = new JSpinner(startPopModel);
         starterSpinner.setPreferredSize(new Dimension(60, 20));
 		//starterSpinner.setValue(10);
 		panelDown.add(starterSpinner);
@@ -256,7 +260,7 @@ public class MainWindow extends JFrame {
         new Thread() {
             @Override
             public void run() {
-                MyChartWindow chart = new MyChartWindow(dataset);
+                new MyChartWindow(dataset);
             }
         }.start();
 
@@ -264,25 +268,18 @@ public class MainWindow extends JFrame {
 		this.setVisible(true);
 	}
 
+    @SuppressWarnings("SynchronizeOnNonFinalField")
     private void findPath() {
-        if (thread == null) {
-            thread = new AlgorithmThread(g, graphPanel, getAlgorithm());
-            thread.start();
-        } else {
-            thread.setGraph(g);
-            thread.setAlgorithm(getAlgorithm());
-            thread.setGraphPanel(graphPanel);
-        }
-
-        if (!thread.sleeping) try {
-            while (!thread.sleeping)
-                Thread.sleep(20);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
+            if (thread == null) {
+                thread = new AlgorithmThread(g, graphPanel, getAlgorithm());
+                thread.start();
+            } else {
+                thread.setGraph(g);
+                thread.setAlgorithm(getAlgorithm());
+                thread.setGraphPanel(graphPanel);
+            }
         synchronized (thread) {
-            thread.notify();
+            thread.wakeup();
         }
     }
 
@@ -367,13 +364,13 @@ public class MainWindow extends JFrame {
 		contentPane.remove(graphPanel);
 		graphPanel = new JPanel();
 
-        Layout<MyVertex, MyEdge> layout = new CircleLayout<MyVertex, MyEdge>(g);
+        CircleLayout<MyVertex, MyEdge> layout = new CircleLayout<MyVertex, MyEdge>(g);
 		layout.setSize(new Dimension(500, 500));
         VisualizationViewer<MyVertex, MyEdge> vv = new VisualizationViewer<MyVertex, MyEdge>(layout);
 		vv.setPreferredSize(new Dimension(550, 550));
 		// Show vertex and edge labels
-		vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
-		vv.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller());
+		vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller<MyVertex>());
+		vv.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller<MyEdge>());
 
 
 		Transformer<MyEdge, Paint> edgeTransform = new Transformer<MyEdge, Paint>() {
