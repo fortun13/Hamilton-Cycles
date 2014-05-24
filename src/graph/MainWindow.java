@@ -43,6 +43,8 @@ public class MainWindow extends JFrame {
 
     private final JTextField levelInput;
 
+    private final JComboBox<CrossingScheme> shcemeChooser;
+
     // Labels for a few spinners
     private JLabel lblNumberOfIterations;
     private JLabel lblMinNumber;
@@ -276,6 +278,9 @@ public class MainWindow extends JFrame {
             }
         });
 
+        shcemeChooser = new JComboBox<CrossingScheme>(new CrossingScheme[] {new Best(), new RandomUnit(), new Gaussian()});
+        panelDown.add(shcemeChooser);
+
         levelInput.setPreferredSize(new Dimension(40, (int) maxSpinner.getPreferredSize().getHeight()));
         levelInput.setHorizontalAlignment(SwingConstants.RIGHT);
         panelDown.add(levelInput);
@@ -374,7 +379,7 @@ public class MainWindow extends JFrame {
                 series[1].clear();
                 series[2].clear();
                 series[3].clear();
-                al = new SecondVer(g, (Integer) starterSpinner.getValue(), (Integer) iterationsSpinner.getValue(), series, levelSlider.getValue()/100d);
+                al = new SecondVer(g, (Integer) starterSpinner.getValue(), (Integer) iterationsSpinner.getValue(), series, levelSlider.getValue()/100d, (CrossingScheme) shcemeChooser.getSelectedItem());
                 break;
         }
         return al;

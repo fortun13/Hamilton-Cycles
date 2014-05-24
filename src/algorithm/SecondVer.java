@@ -21,17 +21,20 @@ public class SecondVer implements Algorithm {
 
     private XYSeries[] series;
     private double mutationLevel;
+    private CrossingScheme best;
 
     /**
-     *  @param g graph of connections between "cities"
+     * @param g graph of connections between "cities"
      * @param populationSize number of population size
      * @param numberOfIterations number of iterations of algorithm
      * @param mutationLevel probability of new Unit mutation
+     * @param best
      */
     public SecondVer(SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge> g,
-                     int populationSize, int numberOfIterations, XYSeries[] series, double mutationLevel) {
+                     int populationSize, int numberOfIterations, XYSeries[] series, double mutationLevel, CrossingScheme best) {
         this.g = g;
         this.mutationLevel = mutationLevel;
+        this.best = best;
         vertices = g.getVertices();
         this.starterPopulation = populationSize;
         this.numberOfIterations = numberOfIterations;
@@ -86,7 +89,7 @@ public class SecondVer implements Algorithm {
             for (int j = starterPopulation - 1; j >= starterPopulation/2; j--) population.remove(j);
 
             // Matching
-            for (Unit unit : population) unit.match(population.get(randomize.nextInt(starterPopulation / 2)));
+            for (Unit unit : population) unit.match(population.get(best.next(starterPopulation / 2)));
 
             Unit baby;
             // Births
