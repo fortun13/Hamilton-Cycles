@@ -19,14 +19,18 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.util.LinkedList;
 
 public class MainWindow extends JFrame {
 
-	private JPanel contentPane;
+    private JPanel contentPane;
 	private SparseMultigraph<MyVertex, MyEdge> g;
 
 	private JSpinner vertexSpinner;
@@ -35,12 +39,17 @@ public class MainWindow extends JFrame {
     private JSpinner iterationsSpinner;
     private JSpinner starterSpinner;
 
+    private final JSlider levelSlider;
+
+    private final JTextField levelInput;
+
     // Labels for a few spinners
     private JLabel lblNumberOfIterations;
     private JLabel lblMinNumber;
     private JLabel lblMaxNumberOf;
     private JLabel lblStarterPopulation;
-    
+    private JLabel lblMutationLevel;
+
     private JCheckBox debugMode;
     
     private JComboBox<String> algorithmList;
@@ -241,6 +250,36 @@ public class MainWindow extends JFrame {
 		//starterSpinner.setValue(10);
 		panelDown.add(starterSpinner);
 
+        lblMutationLevel = new JLabel("mutation levelSlider");
+        panelDown.add(lblMutationLevel);
+
+        levelSlider = new JSlider(0, 100, 1);
+        levelSlider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                levelInput.setText(levelSlider.getValue() + "%");
+            }
+        });
+        panelDown.add(levelSlider);
+
+        levelInput = new JTextField("1%");
+        levelInput.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                updateValues();
+            }
+        });
+        levelInput.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updateValues();
+            }
+        });
+
+        levelInput.setPreferredSize(new Dimension(40, (int) maxSpinner.getPreferredSize().getHeight()));
+        levelInput.setHorizontalAlignment(SwingConstants.RIGHT);
+        panelDown.add(levelInput);
+
 		graphPanel = new JPanel();
 		contentPane.add(graphPanel, BorderLayout.CENTER);
 
@@ -267,6 +306,13 @@ public class MainWindow extends JFrame {
 		setupMenu();
 		this.setVisible(true);
 	}
+
+    private void updateValues() {
+        String input = levelInput.getText().replaceAll("\\s", "");
+        if (input.matches("1?\\d?\\d%?"))
+            levelSlider.setValue(Integer.parseInt(input.replaceAll("%","")));
+        else levelInput.setText(levelSlider.getValue() + "%");
+    }
 
     @SuppressWarnings("SynchronizeOnNonFinalField")
     private void findPath() {
@@ -328,7 +374,7 @@ public class MainWindow extends JFrame {
                 series[1].clear();
                 series[2].clear();
                 series[3].clear();
-                al = new SecondVer(g, (Integer) starterSpinner.getValue(), (Integer) iterationsSpinner.getValue(), series);
+                al = new SecondVer(g, (Integer) starterSpinner.getValue(), (Integer) iterationsSpinner.getValue(), series, levelSlider.getValue()/100d);
                 break;
         }
         return al;

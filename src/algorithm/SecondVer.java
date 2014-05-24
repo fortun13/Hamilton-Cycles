@@ -20,15 +20,18 @@ public class SecondVer implements Algorithm {
     private int numberOfIterations;
 
     private XYSeries[] series;
+    private double mutationLevel;
+
     /**
-     *
-     * @param g graph of connections between "cities"
+     *  @param g graph of connections between "cities"
      * @param populationSize number of population size
      * @param numberOfIterations number of iterations of algorithm
+     * @param mutationLevel probability of new Unit mutation
      */
     public SecondVer(SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge> g,
-                     int populationSize, int numberOfIterations, XYSeries[] series) {
+                     int populationSize, int numberOfIterations, XYSeries[] series, double mutationLevel) {
         this.g = g;
+        this.mutationLevel = mutationLevel;
         vertices = g.getVertices();
         this.starterPopulation = populationSize;
         this.numberOfIterations = numberOfIterations;
@@ -44,7 +47,7 @@ public class SecondVer implements Algorithm {
 
         ArrayList<Unit> population = new ArrayList<Unit>();
 
-        for (int i = 0; i < starterPopulation; i++) population.add(new Unit());
+        for (int i = 0; i < starterPopulation; i++) population.add(new Unit(mutationLevel));
 
         int iteration = 0;
         int bestAdaptation = 1;
@@ -107,20 +110,24 @@ public class SecondVer implements Algorithm {
         public final LinkedList<City> longestPath;
         private final ArrayList<City> genome;
         private ArrayList<City> newGenome = null;
+        private double mutationLevel;
 
         /**
          * Constructor used to create preset unit
          * @param genome product of crossing two other genomes or any other preset genome
          */
-        private Unit(ArrayList<City> genome) {
+        private Unit(ArrayList<City> genome, double mutationLevel) {
             this.genome = genome;
             longestPath = calculateMaxTrace();
+            this.mutationLevel = mutationLevel;
         }
 
         /**
          * Constructor used to create a random unit
+         * @param mutationLevel probability of new Unit mutation
          */
-        Unit() {
+        Unit(double mutationLevel) {
+            this.mutationLevel = mutationLevel;
             genome = new ArrayList<City>(g.getVertexCount());
 
             //Creating vertexes
@@ -151,7 +158,7 @@ public class SecondVer implements Algorithm {
 
                 LinkedList<City> nextTrace = null, myTrace;
                 do {
-                    City next = findCity(city.nextLocation);    // null should never appear;
+                    City next = findCity(city.nextLocation);
                     if (next == null) break;                    // no neighbours, no trace
 
                     myTrace = traces.get(city);
@@ -226,7 +233,6 @@ public class SecondVer implements Algorithm {
             babyGenome.addAll(newGenome.subList(crossingPoint, newGenome.size()));
 
             // mutation
-            final double mutationLevel = 0.1;
             for (int i = 0; i < babyGenome.size(); i++) {
                 if (mutationLevel < randomize.nextDouble()) continue;
 
@@ -235,7 +241,7 @@ public class SecondVer implements Algorithm {
             }
 
             newGenome = null;
-            return new Unit(babyGenome);
+            return new Unit(babyGenome, mutationLevel);
         }
 
         /**
