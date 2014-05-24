@@ -64,6 +64,7 @@ public class MainWindow extends JFrame {
     private XYSeries[] series = new XYSeries[4];
 
     private AlgorithmThread thread = null;
+    private JPanel panelSliders;
 
 	/**
 	 * Launch the application.
@@ -212,7 +213,7 @@ public class MainWindow extends JFrame {
 		});
 
 		JPanel panelDown = new JPanel();
-		panel.add(panelDown, BorderLayout.SOUTH);
+		panel.add(panelDown, BorderLayout.CENTER);
 
 		lblNumberOfIterations = new JLabel("Number of Iterations");
 		panelDown.add(lblNumberOfIterations);
@@ -249,36 +250,39 @@ public class MainWindow extends JFrame {
         starterSpinner.setPreferredSize(new Dimension(60, 20));
 		//starterSpinner.setValue(10);
 		panelDown.add(starterSpinner);
-
-        lblMutationLevel = new JLabel("mutation levelSlider");
-        panelDown.add(lblMutationLevel);
-
-        levelSlider = new JSlider(0, 100, 1);
-        levelSlider.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                levelInput.setText(levelSlider.getValue() + "%");
-            }
-        });
-        panelDown.add(levelSlider);
-
-        levelInput = new JTextField("1%");
-        levelInput.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusLost(FocusEvent e) {
-                updateValues();
-            }
-        });
-        levelInput.addActionListener(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                updateValues();
-            }
-        });
-
-        levelInput.setPreferredSize(new Dimension(40, (int) maxSpinner.getPreferredSize().getHeight()));
-        levelInput.setHorizontalAlignment(SwingConstants.RIGHT);
-        panelDown.add(levelInput);
+        
+        panelSliders = new JPanel();
+        panel.add(panelSliders, BorderLayout.SOUTH);
+        
+                lblMutationLevel = new JLabel("mutation levelSlider");
+                panelSliders.add(lblMutationLevel);
+                
+                        levelSlider = new JSlider(0, 100, 1);
+                        panelSliders.add(levelSlider);
+                        
+                                levelInput = new JTextField("1%");
+                                panelSliders.add(levelInput);
+                                levelInput.addFocusListener(new FocusAdapter() {
+                                    @Override
+                                    public void focusLost(FocusEvent e) {
+                                        updateValues();
+                                    }
+                                });
+                                levelInput.addActionListener(new AbstractAction() {
+                                    @Override
+                                    public void actionPerformed(ActionEvent e) {
+                                        updateValues();
+                                    }
+                                });
+                                
+                                        levelInput.setPreferredSize(new Dimension(40, (int) maxSpinner.getPreferredSize().getHeight()));
+                                        levelInput.setHorizontalAlignment(SwingConstants.RIGHT);
+                        levelSlider.addChangeListener(new ChangeListener() {
+                            @Override
+                            public void stateChanged(ChangeEvent e) {
+                                levelInput.setText(levelSlider.getValue() + "%");
+                            }
+                        });
 
 		graphPanel = new JPanel();
 		contentPane.add(graphPanel, BorderLayout.CENTER);
