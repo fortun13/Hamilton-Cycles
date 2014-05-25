@@ -50,7 +50,6 @@ public class MainWindow extends JFrame {
     private JLabel lblMinNumber;
     private JLabel lblMaxNumberOf;
     private JLabel lblStarterPopulation;
-    private JLabel lblMutationLevel;
 
     private JCheckBox debugMode;
     
@@ -66,9 +65,8 @@ public class MainWindow extends JFrame {
     private XYSeries[] series = new XYSeries[4];
 
     private AlgorithmThread thread = null;
-    private JPanel panelSliders;
 
-	/**
+    /**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
@@ -110,10 +108,8 @@ public class MainWindow extends JFrame {
 		JLabel lblVertex = new JLabel("Vertex");
 		panelUp.add(lblVertex);
 
-        SpinnerNumberModel vertexModel = new SpinnerNumberModel(10, 0, 50, 1);
-        vertexSpinner = new JSpinner(vertexModel);
+        vertexSpinner = new JSpinner(new SpinnerNumberModel(10, 0, 100, 1));
 		panelUp.add(vertexSpinner);
-		//vertexSpinner.setValue(10);
 
 		JButton btnShowGraph = new JButton("GraphToSystemOut");
 		panelUp.add(btnShowGraph);
@@ -175,30 +171,6 @@ public class MainWindow extends JFrame {
 		btnFindPath.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-		/*		for (MyEdge myEdge : g.getEdges()) myEdge.setNotAsPartOfCycle();
-				LinkedList<MyVertex> path = findPath();
-				if (!(path == null)) {
-					for (int i = 0; i < path.size() - 1; i++) {
-						MyEdge edge = g.findEdge(path.get(i), path.get(i + 1));
-						edge.setAsPartOfCycle();
-					}
-					//                    MyEdge edge = g.findEdge(path.get(path.size() - 1), path.get(0));
-					//                    edge.setAsPartOfCycle();
-					//contentPane.repaint();
-                    graphPanel.repaint();
-				}
-				System.out.println(path);*/
-         /*       synchronized (this) {
-                    if (thread == null) {
-                        thread = new AlgorithmThread(g, graphPanel, getAlgorithm(), this);
-                        thread.run();
-                    } else {
-                        thread.setGraph(g);
-                        thread.setAlgorithm(getAlgorithm());
-                        thread.setGraphPanel(graphPanel);
-                    }
-                    thread.notify();
-                }*/
                 findPath();
 			}
 		});
@@ -220,43 +192,32 @@ public class MainWindow extends JFrame {
 		lblNumberOfIterations = new JLabel("Number of Iterations");
 		panelDown.add(lblNumberOfIterations);
 
-        SpinnerNumberModel iterationsModel = new SpinnerNumberModel(1000, 100, 5000, 1);
-		iterationsSpinner = new JSpinner(iterationsModel);
-        iterationsSpinner.setPreferredSize(new Dimension(60, 20));
-		//iterationsSpinner.setValue(1000);
+		iterationsSpinner = new JSpinner(new SpinnerNumberModel(1000, 100, 20000, 1));
 		panelDown.add(iterationsSpinner);
 		
 		lblMinNumber = new JLabel("min. number of specimen");
 		panelDown.add(lblMinNumber);
 
-        SpinnerNumberModel minPopModel = new SpinnerNumberModel(2, 0, 100, 1);
-		minSpinner = new JSpinner(minPopModel);
-        minSpinner.setPreferredSize(new Dimension(50, 20));
-		//minSpinner.setValue(2);
+		minSpinner = new JSpinner(new SpinnerNumberModel(2, 1, 100, 1));
 		panelDown.add(minSpinner);
 		
 		lblMaxNumberOf = new JLabel("max. number of specimen");
 		panelDown.add(lblMaxNumberOf);
 
-        SpinnerNumberModel maxPopModel = new SpinnerNumberModel(200, 100, 1000, 1);
-		maxSpinner = new JSpinner(maxPopModel);
-        maxSpinner.setPreferredSize(new Dimension(60, 20));
-		//maxSpinner.setValue(200);
+		maxSpinner = new JSpinner(new SpinnerNumberModel(200, 50, 1000, 1));
 		panelDown.add(maxSpinner);
 		
 	    lblStarterPopulation = new JLabel("starter population");
 		panelDown.add(lblStarterPopulation);
 
-        SpinnerNumberModel startPopModel = new SpinnerNumberModel(10, 0, 1000, 1);
-		starterSpinner = new JSpinner(startPopModel);
-        starterSpinner.setPreferredSize(new Dimension(60, 20));
+		starterSpinner = new JSpinner(new SpinnerNumberModel(10, 0, 1000, 1));
 		//starterSpinner.setValue(10);
 		panelDown.add(starterSpinner);
-        
-        panelSliders = new JPanel();
+
+        JPanel panelSliders = new JPanel();
         panel.add(panelSliders, BorderLayout.SOUTH);
-        
-                lblMutationLevel = new JLabel("mutation levelSlider");
+
+        JLabel lblMutationLevel = new JLabel("mutation levelSlider");
                 panelSliders.add(lblMutationLevel);
                 
                         levelSlider = new JSlider(0, 100, 1);
@@ -300,9 +261,6 @@ public class MainWindow extends JFrame {
         series[1] = new XYSeries("Worst Adaptation");
         series[2] = new XYSeries("Best/Expected");
         series[3] = new XYSeries("Worst/Expected");
-   /*     final XYSeriesCollection dataset = new XYSeriesCollection(this.series);
-        MyChartWindow chartPanel = new MyChartWindow(dataset);
-        contentPane.add(chartPanel, BorderLayout.SOUTH);*/
 
         final XYSeriesCollection[] dataset = new XYSeriesCollection[4];
         dataset[0] = new XYSeriesCollection(series[0]);
@@ -341,32 +299,6 @@ public class MainWindow extends JFrame {
             thread.wakeup();
         }
     }
-
-	/*private LinkedList<MyVertex> findPath() {
-        Algorithm al = null;
-        switch (algorithmList.getSelectedIndex()) {
-            case 0:
-                al = new NonGenetic(g);
-                break;
-            case 1:
-                series[0].clear();
-                series[1].clear();
-                al = new FirstVer(g, (Integer) starterSpinner.getValue(), (Integer) iterationsSpinner.getValue(),
-                        (Integer) minSpinner.getValue(), (Integer) maxSpinner.getValue(), series);
-                if (debugMode.isSelected()) ((FirstVer) al).setDebugModeOn();
-                else ((FirstVer) al).setDebugModeOff();
-                break;
-            case 2:
-                series[0].clear();
-                series[1].clear();
-                series[2].clear();
-                series[3].clear();
-                al = new SecondVer(g, (Integer) starterSpinner.getValue(), (Integer) iterationsSpinner.getValue(), series);
-                break;
-        }
-
-		return al.getCycle();
-	}*/
 
     private Algorithm getAlgorithm() {
         Algorithm al = null;
