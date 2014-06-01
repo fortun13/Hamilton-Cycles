@@ -23,8 +23,8 @@ public class GraphElements {
     
     public static class MyVertex {
         private String name;
-        private boolean packetSwitchCapable;
-        private boolean tdmSwitchCapable;
+        //private boolean packetSwitchCapable;
+        //private boolean tdmSwitchCapable;
         private int number;
         
         public MyVertex(String name) {
@@ -39,21 +39,21 @@ public class GraphElements {
             this.name = name;
         }
 
-        public boolean isPacketSwitchCapable() {
+        /*public boolean isPacketSwitchCapable() {
             return packetSwitchCapable;
-        }
+        }*/
 
-        public void setPacketSwitchCapable(boolean packetSwitchCapable) {
+        /*public void setPacketSwitchCapable(boolean packetSwitchCapable) {
             this.packetSwitchCapable = packetSwitchCapable;
-        }
+        }*/
 
-        public boolean isTdmSwitchCapable() {
+        /*public boolean isTdmSwitchCapable() {
             return tdmSwitchCapable;
-        }
+        }*/
 
-        public void setTdmSwitchCapable(boolean tdmSwitchCapable) {
+        /*public void setTdmSwitchCapable(boolean tdmSwitchCapable) {
             this.tdmSwitchCapable = tdmSwitchCapable;
-        }
+        }*/
         
         public String toString() {
             return name;
@@ -69,29 +69,29 @@ public class GraphElements {
     }
     
     public static class MyEdge {
-        private double capacity;
-        private double weight;
+        //private double capacity;
+        //private double weight;
         private String name;
         private boolean isPartOfCycle = false;
 
         public MyEdge(String name) {
             this.name = name;
         }
-        public double getCapacity() {
+        /*public double getCapacity() {
             return capacity;
-        }
+        }*/
 
-        public void setCapacity(double capacity) {
+        /*public void setCapacity(double capacity) {
             this.capacity = capacity;
-        }
+        }*/
 
-        public double getWeight() {
+        /*public double getWeight() {
             return weight;
-        }
+        }*/
 
-        public void setWeight(double weight) {
+        /*public void setWeight(double weight) {
             this.weight = weight;
-        }
+        }*/
 
         public String getName() {
             return name;
@@ -136,8 +136,8 @@ public class GraphElements {
             String name = "V" + nodeCount;
             MyVertex v = new MyVertex(name);
             v.setNumber(nodeCount);
-            v.setPacketSwitchCapable(defaultPSC);
-            v.setTdmSwitchCapable(defaultTDM);
+            //v.setPacketSwitchCapable(defaultPSC);
+            //v.setTdmSwitchCapable(defaultTDM);
             nodeCount++;
             return v;
         }
@@ -179,8 +179,8 @@ public class GraphElements {
         public GraphElements.MyEdge create() {
             String name = "E" + linkCount++;
             MyEdge link = new MyEdge(name);
-            link.setWeight(defaultWeight);
-            link.setCapacity(defaultCapacity);
+            //link.setWeight(defaultWeight);
+            //link.setCapacity(defaultCapacity);
             return link;
         }
 

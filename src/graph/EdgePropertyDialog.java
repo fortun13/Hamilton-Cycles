@@ -20,8 +20,8 @@ public class EdgePropertyDialog extends javax.swing.JDialog {
         initComponents();
         this.edge = edge;
         setTitle("Edge: " + edge.toString());
-        this.capFormattedTextField.setValue(edge.getCapacity() );
-        this.wtFormattedTextField.setValue(edge.getWeight());
+        //this.capFormattedTextField.setValue(edge.getCapacity() );
+        //this.wtFormattedTextField.setValue(edge.getWeight());
     }
     
     /** This method is called from within the constructor to
@@ -89,8 +89,8 @@ public class EdgePropertyDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void okButtonHandler(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonHandler
-        edge.setCapacity((Double)this.capFormattedTextField.getValue());
-        edge.setWeight((Double)this.wtFormattedTextField.getValue());
+        //edge.setCapacity((Double)this.capFormattedTextField.getValue());
+        //edge.setWeight((Double)this.wtFormattedTextField.getValue());
         dispose();
     }//GEN-LAST:event_okButtonHandler
     

@@ -31,16 +31,16 @@ public class MyMouseMenus {
             super("Edge Menu");
             // this.frame = frame;
             this.add(new DeleteEdgeMenuItem<GraphElements.MyEdge>());
-            this.addSeparator();
+            /*this.addSeparator();
             this.add(new WeightDisplay());
             this.add(new CapacityDisplay());
             this.addSeparator();
-            this.add(new EdgePropItem(frame));           
+            this.add(new EdgePropItem(frame));*/
         }
         
     }
     
-    public static class EdgePropItem extends JMenuItem implements EdgeMenuListener<GraphElements.MyEdge>,
+    /*public static class EdgePropItem extends JMenuItem implements EdgeMenuListener<GraphElements.MyEdge>,
             MenuPointListener {
         GraphElements.MyEdge edge;
         VisualizationViewer visComp;
@@ -67,30 +67,30 @@ public class MyMouseMenus {
             });
         }
         
-    }
-    public static class WeightDisplay extends JMenuItem implements EdgeMenuListener<GraphElements.MyEdge> {
+    }*/
+    /*public static class WeightDisplay extends JMenuItem implements EdgeMenuListener<GraphElements.MyEdge> {
         public void setEdgeAndView(GraphElements.MyEdge e, VisualizationViewer visComp) {
             this.setText("Weight " + e + " = " + e.getWeight());
         }
-    }
+    }*/
     
-    public static class CapacityDisplay extends JMenuItem implements EdgeMenuListener<GraphElements.MyEdge> {
+    /*public static class CapacityDisplay extends JMenuItem implements EdgeMenuListener<GraphElements.MyEdge> {
         public void setEdgeAndView(GraphElements.MyEdge e, VisualizationViewer visComp) {
             this.setText("Capacity " + e + " = " + e.getCapacity());
         }
-    }
+    }*/
     
     public static class VertexMenu extends JPopupMenu {
         public VertexMenu() {
             super("Vertex Menu");
             this.add(new DeleteVertexMenuItem<GraphElements.MyVertex>());
-            this.addSeparator();
+            /*this.addSeparator();
             this.add(new pscCheckBox());
-            this.add(new tdmCheckBox());
+            this.add(new tdmCheckBox());*/
         }
     }
     
-    public static class pscCheckBox extends JCheckBoxMenuItem implements VertexMenuListener<GraphElements.MyVertex> {
+    /*public static class pscCheckBox extends JCheckBoxMenuItem implements VertexMenuListener<GraphElements.MyVertex> {
         GraphElements.MyVertex v;
         
         public pscCheckBox() {
@@ -107,9 +107,9 @@ public class MyMouseMenus {
             this.setSelected(v.isPacketSwitchCapable());
         }
         
-    }
+    }*/
     
-        public static class tdmCheckBox extends JCheckBoxMenuItem implements VertexMenuListener<GraphElements.MyVertex> {
+        /*public static class tdmCheckBox extends JCheckBoxMenuItem implements VertexMenuListener<GraphElements.MyVertex> {
         GraphElements.MyVertex v;
         
         public tdmCheckBox() {
@@ -126,6 +126,6 @@ public class MyMouseMenus {
             this.setSelected(v.isTdmSwitchCapable());
         }
         
-    }
+    }*/
     
 }
