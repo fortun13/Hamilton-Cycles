@@ -83,6 +83,7 @@ public class SecondVer implements Algorithm {
             series[1].add(iteration,worstAdaptation);
             series[2].add(iteration, ((double) population.get(0).longestPath.size()-1)/g.getVertexCount());
             series[3].add(iteration, ((double) population.get(population.size() - 1).longestPath.size() - 1)/g.getVertexCount());
+
             if (population.get(0).longestPath.size() == g.getVertexCount() + 1       // Ideal unit found
                     || iteration == numberOfIterations)                         // Iteration limit reached
                 break;

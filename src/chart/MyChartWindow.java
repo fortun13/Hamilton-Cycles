@@ -43,8 +43,8 @@ public class MyChartWindow extends JFrame {
      */
     private JFreeChart createChart(final XYDataset[] series) {
         final JFreeChart result = ChartFactory.createXYLineChart(
-                "Test Chart",
-                "Number of Iteration",
+                "Chart",
+                "Iteration",
                 "Population",
                 series[0],
                 PlotOrientation.VERTICAL,

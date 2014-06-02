@@ -16,7 +16,7 @@ public class AlgorithmThread extends Thread {
     private SparseMultigraph<GraphElements.MyVertex, GraphElements.MyEdge> g;
     private JPanel graphPanel;
     private Algorithm al;
-    private  LinkedList<GraphElements.MyVertex> path = new LinkedList<GraphElements.MyVertex>();
+    private LinkedList<GraphElements.MyVertex> path = new LinkedList<GraphElements.MyVertex>();
 
     public boolean sleeping = true;
 

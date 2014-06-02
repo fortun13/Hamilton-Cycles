@@ -135,11 +135,13 @@ public class FirstVer implements Algorithm {
                         " deaths = " + deaths +
                         " births = " + births +
                         " mean age = " + meanAge/population.size());
-                if (series != null) {
+        /*        if (series != null) {
                     series[0].add(i, population.size());
                     series[1].add(i,deaths);
-                }
+                }*/
             }
+
+
         }
 
         HashMap<ArrayList<City>, Integer> species = new HashMap<ArrayList<City>, Integer>();

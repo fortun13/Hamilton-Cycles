@@ -126,8 +126,8 @@ public class MainWindow extends JFrame {
 		
 		algorithmList = new JComboBox<String>();
 		algorithmList.addItem("Simple Algorithm");
-		algorithmList.addItem("Genetic Algorithm");
-        algorithmList.addItem("Mycek Algorithm");
+		algorithmList.addItem("Extended Algorithm");
+        algorithmList.addItem("Basic Algorithm");
         algorithmList.setSelectedIndex(2);
         algorithmList.addActionListener(
                 new ActionListener() {
@@ -356,9 +356,9 @@ public class MainWindow extends JFrame {
 		graphPanel = new JPanel();
 
         CircleLayout<MyVertex, MyEdge> layout = new CircleLayout<MyVertex, MyEdge>(g);
-		layout.setSize(new Dimension(500, 500));
+		layout.setSize(new Dimension(800, 500));
         VisualizationViewer<MyVertex, MyEdge> vv = new VisualizationViewer<MyVertex, MyEdge>(layout);
-		vv.setPreferredSize(new Dimension(550, 550));
+		vv.setPreferredSize(new Dimension(850, 550));
 		// Show vertex and edge labels
 		vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller<MyVertex>());
 		vv.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller<MyEdge>());
